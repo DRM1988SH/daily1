@@ -3,179 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الحسابات المالية الشخصية (مع لوحة الأدمن)</title>
+    <title>نظام الحسابات المالية الشخصية</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
-        th, td { border: 1.5px solid #0f0f0f; padding: 8px; text-align: center; word-break: break-word; }
-        th { background-color: #f5f9f5; color: rgb(207, 28, 28); }
+        body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
+        header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        header p { margin: 0; font-size: 1.5em; font-weight: bold; }
+        h1 { color: #2e7d32; text-align: center; margin-top: 20px; }
+        h2 { color: #1b5e20; border-right: 5px solid #4CAF50; padding-right: 10px; margin-top: 30px; font-size: 1.3em; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: right; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; }
+        th, td { border-bottom: 1px solid #e0e0e0; padding: 12px; text-align: center; }
+        th { background-color: #f1f8e9; color: #2e7d32; font-weight: bold; }
+        tbody tr:hover { background-color: #f9f9f9; }
+        
         .content { padding: 20px; max-width: 1200px; margin: 0 auto; }
-        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; transition: 0.2s; }
-        button:hover { opacity: 0.9; }
-        input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="password"] { padding: 10px; margin: 5px 0; width: calc(100% - 22px); border: 1px solid #ccc; border-radius: 5px; font-family: inherit; }
+        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 1em; transition: 0.2s; font-weight: bold; }
+        button:hover { background-color: #388e3c; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="password"] { padding: 12px; margin: 5px 0; width: 100%; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; font-size: 1em; }
         
-        .section-title { color: #1b5e20; border-right: 5px solid #4CAF50; padding-right: 10px; margin-top: 30px; }
-        .income-section { background-color: #e3f2fd; padding: 15px; margin-top: 20px; border-radius: 5px; }
-        .debt-owed-section { background-color: #fff8e1; padding: 15px; margin-top: 20px; border-radius: 5px; }
-        .debt-i-owe-section { background-color: #fce4ec; padding: 15px; margin-top: 20px; border-radius: 5px; }
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .input-group input { flex: 1; min-width: 150px; margin: 0; }
+        .input-group button { flex: 0 0 auto; margin: 0; }
+
+        .income-section h2 { color: #1565c0; border-right-color: #1976d2; }
+        .income-section button { background-color: #1976d2; }
+        .debt-owed-section h2 { color: #e65100; border-right-color: #f9a825; }
+        .debt-owed-section button { background-color: #f9a825; color: #333; }
+        .debt-i-owe-section h2 { color: #b71c1c; border-right-color: #c62828; }
+        .debt-i-owe-section button { background-color: #c62828; }
         
-        .total-row td { background-color: #e8f5e9; font-weight: bold; color: #1b5e20; }
-        .income-row td { background-color: #e3f2fd; font-weight: bold; color: #0d47a1; }
-        .debt-owed-row td { background-color: #fff8e1; font-weight: bold; color: #e65100; }
-        .debt-i-owe-row td { background-color: #fce4ec; font-weight: bold; color: #b71c1c; }
-        .balance-row td { background-color: #fff3e0; font-weight: bold; color: #e65100; }
-        .net-worth-row td { background-color: #e8eaf6; font-weight: bold; color: #283593; font-size: 1.1em; }
+        .total-row td { background-color: #e8f5e9; font-weight: bold; color: #1b5e20; font-size: 1.1em; }
+        .income-total-row td { background-color: #e3f2fd; font-weight: bold; color: #0d47a1; font-size: 1.1em; }
+        .debt-owed-total-row td { background-color: #fff8e1; font-weight: bold; color: #e65100; font-size: 1.1em; }
+        .debt-i-owe-total-row td { background-color: #fce4ec; font-weight: bold; color: #b71c1c; font-size: 1.1em; }
+        
+        .summary-table { background: #e8eaf6; border-radius: 8px; margin-top: 20px; }
+        .summary-table td { border: none; padding: 15px; font-size: 1.2em; font-weight: bold; color: #283593; }
+        .summary-table .balance-row td { background-color: #c5cae9; }
         
         .table-wrapper { width: 100%; overflow-x: auto; }
-        .table-wrapper table { min-width: 480px; }
-        
-        .auth-container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .auth-container h2 { color: #333; }
-        .auth-container input { width: 100%; margin-bottom: 15px; }
-        .auth-container button { width: 100%; padding: 12px; font-size: 16px; }
-        .auth-toggle { margin-top: 15px; color: #1976d2; cursor: pointer; text-decoration: underline; }
-        #logoutBtn { background-color: #d32f2f; float: left; margin-bottom: 20px; }
+        .table-wrapper table { min-width: 400px; }
 
-        #adminPanel { display: none; background: #fff3e0; padding: 20px; margin-bottom: 30px; border: 2px dashed #e65100; border-radius: 10px; }
-        #adminPanel h2 { color: #e65100; margin-top: 0; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ffcc80; }
-        .user-row span { font-weight: bold; color: #333; }
-        .btn-delete { background-color: #d32f2f; padding: 6px 12px; font-size: 0.9em; }
+        /* شاشة الدخول */
+        .auth-container { max-width: 450px; margin: 50px auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; }
+        .auth-container h2 { color: #333; border: none; padding: 0; margin-bottom: 20px; font-size: 1.8em; }
+        .auth-container input { margin-bottom: 15px; }
+        .auth-container button { width: 100%; padding: 14px; font-size: 1.1em; }
+        .auth-toggle { margin-top: 20px; color: #1976d2; cursor: pointer; text-decoration: underline; font-size: 0.95em; }
+        .auth-error { color: #d32f2f; font-size: 0.9em; margin-top: 10px; font-weight: bold; }
+
+        /* لوحة الأدمن */
+        #adminPanel { display: none; background: #fff8e1; padding: 25px; margin-bottom: 30px; border: 2px dashed #e65100; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        #adminPanel h2 { color: #e65100; margin-top: 0; border-right-color: #e65100; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ffcc80; }
+        .user-info { display: flex; flex-direction: column; gap: 5px; text-align: right; }
+        .user-info strong { color: #333; font-size: 1.1em; }
+        .user-info span { color: #666; font-size: 0.9em; }
+        .btn-delete { background-color: #d32f2f; padding: 8px 15px; font-size: 0.9em; }
+        .btn-delete:hover { background-color: #b71c1c; }
+
+        #logoutBtn { background-color: #d32f2f; float: left; margin-bottom: 20px; width: auto; padding: 8px 15px; }
+        
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #f4f4f4; display: flex; justify-content: center; align-items: center;
+            z-index: 9999; font-size: 1.5em; font-weight: bold; color: #4CAF50; flex-direction: column; gap: 15px;
+        }
 
         @media (max-width: 768px) { 
-            button { width: 100%; margin-top: 6px; } 
-            input[type="text"], input[type="number"], input[type="date"] { width: 100%; } 
-            .user-row { flex-direction: column; gap: 10px; }
+            .input-group { flex-direction: column; }
+            .user-row { flex-direction: column; gap: 15px; text-align: center; }
+            .user-info { text-align: center; }
+            #logoutBtn { width: 100%; float: none; }
         }
     </style>
 </head>
 <body>
 
+<div id="loadingOverlay">
+    <div>جاري الاتصال وتحديث البيانات... ⏳</div>
+</div>
+
 <header>
     <p>نظام الحسابات المالية الشخصية</p>
 </header>
 
-<!-- شاشة تسجيل الدخول / إنشاء الحساب -->
-<div id="authSection" class="auth-container">
+<!-- شاشة تسجيل الدخول -->
+<div id="authSection" class="auth-container" style="display: none;">
     <h2 id="authTitle">تسجيل الدخول</h2>
+    
+    <!-- حقل الاسم (يظهر فقط عند إنشاء حساب) -->
+    <input type="text" id="nameInput" placeholder="الاسم الكامل (مثال: مصعب)" style="display: none;">
+    
     <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
     <input type="password" id="passwordInput" placeholder="كلمة المرور">
+    
     <button id="authButton">دخول</button>
     <p class="auth-toggle" id="toggleAuth">ليس لديك حساب؟ إنشاء حساب جديد</p>
-    <p id="authError" style="color: red; font-size: 14px; margin-top: 10px;"></p>
+    <p id="authError" class="auth-error"></p>
 </div>
 
 <!-- التطبيق الأساسي -->
 <div class="content" id="mainApp" style="display: none;">
-    <button id="logoutBtn">تسجيل الخروج</button>
-    <div style="clear:both;"></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0; text-align: right; color: #333;">أهلاً، <span id="displayUserName" style="color: #4CAF50;"></span></h1>
+        <button id="logoutBtn">تسجيل الخروج</button>
+    </div>
 
+    <!-- لوحة تحكم الأدمن -->
     <div id="adminPanel">
-        <h2>🛡️ لوحة تحكم الأدمن (خاصة بك)</h2>
-        <p>هنا يمكنك رؤية جميع المستخدمين المسجلين وحذف بياناتهم بالكامل (تصفير الحساب).</p>
+        <h2>🛡️ لوحة تحكم الأدمن</h2>
+        <p>إدارة حسابات المستخدمين المسجلين وبياناتهم.</p>
         <div id="usersList"></div>
     </div>
     
+    <!-- المنصرفات -->
     <div>
-        <h1>تتبع المنصرفات اليومية</h1>
-        <input type="text" id="descInput" placeholder="أدخل وصف المنصرف">
-        <input type="number" id="amountInput" placeholder="أدخل المبلغ">
-        <input type="date" id="dateInput">
-        <button id="addButton">إضافة المنصرف</button>
-    </div>
-
-    <div>
-        <h2 class="section-title">جدول المنصرفات</h2>
+        <h2>تتبع المنصرفات اليومية</h2>
+        <div class="input-group">
+            <input type="text" id="descInput" placeholder="أدخل وصف المنصرف">
+            <input type="number" id="amountInput" placeholder="أدخل المبلغ" step="0.01">
+            <input type="date" id="dateInput">
+            <button id="addButton">إضافة المنصرف</button>
+        </div>
         <div class="table-wrapper">
-            <table id="expensesTable">
-                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
+            <table>
+                <thead><tr><th>التاريخ</th><th>الوصف</th><th>المبلغ</th></tr></thead>
                 <tbody id="tableBody"></tbody>
                 <tfoot><tr class="total-row"><td colspan="2">إجمالي المنصرفات</td><td id="totalCell">0</td></tr></tfoot>
             </table>
         </div>
     </div>
 
+    <!-- الدخل -->
     <div class="income-section">
-        <h2 class="section-title">إضافة دخل</h2>
-        <input type="text" id="incomeDescInput" placeholder="أدخل وصف الدخل">
-        <input type="number" id="incomeAmountInput" placeholder="أدخل مبلغ الدخل">
-        <input type="date" id="incomeDateInput">
-        <button id="addIncomeButton">إضافة الدخل</button>
-    </div>
-
-    <div>
-        <h2 class="section-title">جدول الدخل</h2>
-        <div class="table-wrapper">
-            <table class="income-table" id="incomeTable">
-                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
-                <tbody id="incomeTableBody"></tbody>
-                <tfoot><tr class="income-row"><td colspan="2">إجمالي الدخل</td><td id="totalIncomeCell">0</td></tr></tfoot>
-            </table>
+        <h2>إضافة دخل</h2>
+        <div class="input-group">
+            <input type="text" id="incomeDescInput" placeholder="أدخل وصف الدخل">
+            <input type="number" id="incomeAmountInput" placeholder="أدخل المبلغ" step="0.01">
+            <input type="date" id="incomeDateInput">
+            <button id="addIncomeButton">إضافة الدخل</button>
         </div>
-    </div>
-
-    <div class="debt-owed-section">
-        <h2 class="section-title">الديون المستحقة لي عند الآخرين</h2>
-        <input type="text" id="debtOwedDescInput" placeholder="اسم الشخص / وصف الدين">
-        <input type="number" id="debtOwedAmountInput" placeholder="أدخل المبلغ">
-        <input type="date" id="debtOwedDateInput">
-        <button id="addDebtOwedButton">إضافة دين لي</button>
-    </div>
-
-    <div>
-        <h2 class="section-title">جدول الديون المستحقة لي</h2>
-        <div class="table-wrapper">
-            <table class="debt-owed-table" id="debtOwedTable">
-                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
-                <tbody id="debtOwedTableBody"></tbody>
-                <tfoot><tr class="debt-owed-row"><td colspan="2">إجمالي الديون المستحقة لي</td><td id="totalDebtOwedCell">0</td></tr></tfoot>
-            </table>
-        </div>
-    </div>
-
-    <div class="debt-i-owe-section">
-        <h2 class="section-title">الديون التي عليّ للآخرين</h2>
-        <input type="text" id="debtIOweDescInput" placeholder="اسم الشخص / وصف الدين">
-        <input type="number" id="debtIOweAmountInput" placeholder="أدخل المبلغ">
-        <input type="date" id="debtIOweDateInput">
-        <button id="addDebtIOweButton">إضافة دين عليّ</button>
-    </div>
-
-    <div>
-        <h2 class="section-title">جدول الديون التي عليّ</h2>
-        <div class="table-wrapper">
-            <table class="debt-i-owe-table" id="debtIOweTable">
-                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
-                <tbody id="debtIOweTableBody"></tbody>
-                <tfoot><tr class="debt-i-owe-row"><td colspan="2">إجمالي الديون التي عليّ</td><td id="totalDebtIOweCell">0</td></tr></tfoot>
-            </table>
-        </div>
-    </div>
-
-    <div class="net-worth-section">
-        <h2 class="section-title">الملخص المالي الشامل</h2>
         <div class="table-wrapper">
             <table>
-                <tfoot>
-                    <tr class="balance-row"><td colspan="2">الرصيد (الدخل - المنصرفات)</td><td id="balanceCell">0</td></tr>
-                    <tr class="net-worth-row"><td colspan="2">صافي الثروة (الرصيد + ديون لي - ديون عليّ)</td><td id="netWorthCell">0</td></tr>
-                </tfoot>
+                <thead><tr><th>التاريخ</th><th>الوصف</th><th>المبلغ</th></tr></thead>
+                <tbody id="incomeTableBody"></tbody>
+                <tfoot><tr class="income-total-row"><td colspan="2">إجمالي الدخل</td><td id="totalIncomeCell">0</td></tr></tfoot>
             </table>
         </div>
+    </div>
+
+    <!-- ديون لي -->
+    <div class="debt-owed-section">
+        <h2>الديون المستحقة لي (عند الآخرين)</h2>
+        <div class="input-group">
+            <input type="text" id="debtOwedDescInput" placeholder="اسم الشخص / وصف الدين">
+            <input type="number" id="debtOwedAmountInput" placeholder="أدخل المبلغ" step="0.01">
+            <input type="date" id="debtOwedDateInput">
+            <button id="addDebtOwedButton">إضافة دين لي</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>التاريخ</th><th>الوصف</th><th>المبلغ</th></tr></thead>
+                <tbody id="debtOwedTableBody"></tbody>
+                <tfoot><tr class="debt-owed-total-row"><td colspan="2">إجمالي الديون المستحقة لي</td><td id="totalDebtOwedCell">0</td></tr></tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- ديون عليّ -->
+    <div class="debt-i-owe-section">
+        <h2>الديون التي عليّ (للآخرين)</h2>
+        <div class="input-group">
+            <input type="text" id="debtIOweDescInput" placeholder="اسم الشخص / وصف الدين">
+            <input type="number" id="debtIOweAmountInput" placeholder="أدخل المبلغ" step="0.01">
+            <input type="date" id="debtIOweDateInput">
+            <button id="addDebtIOweButton">إضافة دين عليّ</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>التاريخ</th><th>الوصف</th><th>المبلغ</th></tr></thead>
+                <tbody id="debtIOweTableBody"></tbody>
+                <tfoot><tr class="debt-i-owe-total-row"><td colspan="2">إجمالي الديون التي عليّ</td><td id="totalDebtIOweCell">0</td></tr></tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- الملخص -->
+    <div class="table-wrapper summary-table">
+        <table>
+            <tfoot>
+                <tr class="balance-row"><td colspan="2">الرصيد (الدخل - المنصرفات)</td><td id="balanceCell">0</td></tr>
+                <tr><td colspan="2">صافي الثروة (الرصيد + ديون لي - ديون عليّ)</td><td id="netWorthCell">0</td></tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, getDocs, getDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // ✅ المفتاح الصحيح الذي أرسلته
+    // ⚠️ إعدادات Firebase الخاصة بك
     const firebaseConfig = {
-        apiKey: "AIzaSyC4sYVSO7InGg62FYpG6ebEJvx14hm-a_I", 
+        apiKey: "AIzaSyC4sYVS07InGg62FYpG6ebEJvx14hm-a_I",
         authDomain: "daily1-f3ac9.firebaseapp.com",
         projectId: "daily1-f3ac9",
         storageBucket: "daily1-f3ac9.firebasestorage.app",
@@ -187,47 +220,77 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const ADMIN_EMAIL = "mosab649@gmail.com"; // إيميل الأدمن
+    const ADMIN_EMAIL = "mosab649@gmail.com"; 
+
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
 
     let currentUser = null;
+    let currentUserName = "مستخدم";
     let isLoginMode = true; 
     let unsubscribeListeners = []; 
 
+    // --- عناصر الواجهة ---
     const authSection = document.getElementById('authSection');
     const mainApp = document.getElementById('mainApp');
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const authTitle = document.getElementById('authTitle');
+    const nameInput = document.getElementById('nameInput');
     const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
     const authButton = document.getElementById('authButton');
     const toggleAuth = document.getElementById('toggleAuth');
     const authError = document.getElementById('authError');
+    const displayUserName = document.getElementById('displayUserName');
 
+    // دالة تعيين تاريخ اليوم تلقائياً
+    const setDefaultDates = () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(input => input.value = today);
+    };
+
+    // --- إعدادات الدخول والتسجيل ---
     toggleAuth.addEventListener('click', () => {
         isLoginMode = !isLoginMode;
+        authError.innerText = "";
         if(isLoginMode) {
             authTitle.innerText = "تسجيل الدخول";
             authButton.innerText = "دخول";
+            nameInput.style.display = 'none';
             toggleAuth.innerText = "ليس لديك حساب؟ إنشاء حساب جديد";
         } else {
             authTitle.innerText = "إنشاء حساب جديد";
             authButton.innerText = "تسجيل";
+            nameInput.style.display = 'block';
             toggleAuth.innerText = "لديك حساب بالفعل؟ تسجيل الدخول";
         }
-        authError.innerText = "";
     });
 
     authButton.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value;
+        const name = nameInput.value.trim();
         authError.innerText = "";
         
         if(!email || !password) { authError.innerText = "يرجى إدخال البريد وكلمة المرور."; return; }
+        if(!isLoginMode && !name) { authError.innerText = "يرجى إدخال اسمك."; return; }
 
         try {
             if(isLoginMode) {
                 await signInWithEmailAndPassword(auth, email, password);
             } else {
-                await createUserWithEmailAndPassword(auth, email, password);
+                // إنشاء الحساب
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // حفظ الاسم في ملف تعريف المستخدم
+                await updateProfile(user, { displayName: name });
+                
+                // حفظ بيانات المستخدم في قاعدة البيانات ليتمكن الأدمن من رؤيتها
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                });
             }
         } catch (error) {
             console.error(error);
@@ -238,17 +301,40 @@
         }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        loadingOverlay.style.display = 'flex'; 
+        signOut(auth);
+    });
 
-    onAuthStateChanged(auth, (user) => {
+    // --- مراقبة حالة الدخول ---
+    onAuthStateChanged(auth, async (user) => {
+        loadingOverlay.style.display = 'none';
+        
         unsubscribeListeners.forEach(unsub => unsub());
         unsubscribeListeners = [];
         
         if (user) {
             currentUser = user;
+            
+            // جلب الاسم
+            if(user.displayName) {
+                currentUserName = user.displayName;
+            } else {
+                // في حال لم يوجد اسم (حساب قديم)، نجلب من قاعدة البيانات
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if(userDoc.exists() && userDoc.data().name) {
+                    currentUserName = userDoc.data().name;
+                } else {
+                    currentUserName = user.email.split('@')[0];
+                }
+            }
+            displayUserName.innerText = currentUserName;
+
             authSection.style.display = 'none';
             mainApp.style.display = 'block';
-            startRealtimeSync();
+            
+            setDefaultDates();
+            startRealtimeSync(); 
 
             if (user.email === ADMIN_EMAIL) {
                 document.getElementById('adminPanel').style.display = 'block';
@@ -260,12 +346,14 @@
             currentUser = null;
             authSection.style.display = 'block';
             mainApp.style.display = 'none';
-            emailInput.value = ''; passwordInput.value = '';
+            emailInput.value = ''; passwordInput.value = ''; nameInput.value = '';
+            
             document.querySelectorAll('tbody').forEach(el => el.innerHTML = '');
             document.querySelectorAll('tfoot td:last-child').forEach(el => el.textContent = '0');
         }
     });
 
+    // --- دوال تحديث الجداول ---
     const tableBody = document.getElementById('tableBody');
     const incomeTableBody = document.getElementById('incomeTableBody');
     const debtOwedTableBody = document.getElementById('debtOwedTableBody');
@@ -283,7 +371,7 @@
         data.forEach(function(item) {
             const row = document.createElement('tr');
             const safeDesc = item.description.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            row.innerHTML = `<td>${item.date}</td><td>${safeDesc}</td><td>${item.amount}</td>`;
+            row.innerHTML = `<td>${item.date}</td><td>${safeDesc}</td><td>${Number(item.amount).toLocaleString('en-US')}</td>`;
             tbody.appendChild(row);
             total += Number(item.amount);
         });
@@ -304,35 +392,38 @@
         netWorthCell.textContent = netWorth.toLocaleString('en-US');
     }
 
+    // --- المزامنة اللحظية ---
     function startRealtimeSync() {
         if (!currentUser) return;
         const uid = currentUser.uid;
+        const handleError = (error) => console.error("خطأ في جلب البيانات:", error);
 
         const qExp = query(collection(db, "expenses"), where("userId", "==", uid), orderBy("date", "desc"));
         unsubscribeListeners.push(onSnapshot(qExp, (snap) => {
             const data = []; snap.forEach(d => data.push(d.data()));
             updateGenericTable(tableBody, data, totalCell); updateBalance();
-        }));
+        }, handleError));
 
         const qInc = query(collection(db, "incomes"), where("userId", "==", uid), orderBy("date", "desc"));
         unsubscribeListeners.push(onSnapshot(qInc, (snap) => {
             const data = []; snap.forEach(d => data.push(d.data()));
             updateGenericTable(incomeTableBody, data, totalIncomeCell); updateBalance();
-        }));
+        }, handleError));
 
         const qOwed = query(collection(db, "debtsOwed"), where("userId", "==", uid), orderBy("date", "desc"));
         unsubscribeListeners.push(onSnapshot(qOwed, (snap) => {
             const data = []; snap.forEach(d => data.push(d.data()));
             updateGenericTable(debtOwedTableBody, data, totalDebtOwedCell); updateBalance();
-        }));
+        }, handleError));
 
         const qIOwe = query(collection(db, "debtsIOwe"), where("userId", "==", uid), orderBy("date", "desc"));
         unsubscribeListeners.push(onSnapshot(qIOwe, (snap) => {
             const data = []; snap.forEach(d => data.push(d.data()));
             updateGenericTable(debtIOweTableBody, data, totalDebtIOweCell); updateBalance();
-        }));
+        }, handleError));
     }
 
+    // --- إضافة البيانات ---
     async function addData(collectionName, descId, amountId, dateId) {
         if (!currentUser) return;
         const desc = document.getElementById(descId).value.trim();
@@ -340,13 +431,22 @@
         const date = document.getElementById(dateId).value;
         
         if (desc && !isNaN(amount) && date) {
-            await addDoc(collection(db, collectionName), { 
-                description: desc, amount: amount, date: date, userId: currentUser.uid
-            });
-            document.getElementById(descId).value = ''; 
-            document.getElementById(amountId).value = ''; 
-            document.getElementById(dateId).value = '';
-        } else { alert('يرجى ملء الحقول بشكل صحيح.'); }
+            try {
+                await addDoc(collection(db, collectionName), { 
+                    description: desc, 
+                    amount: amount, 
+                    date: date, 
+                    userId: currentUser.uid,
+                    userName: currentUserName // إضافة اسم المستخدم لكل سجل
+                });
+                document.getElementById(descId).value = ''; 
+                document.getElementById(amountId).value = ''; 
+                // نترك التاريخ كما هو لتسهيل الإدخال المتتالي
+            } catch (error) {
+                alert("فشل الحفظ: " + error.message);
+                console.error(error);
+            }
+        } else { alert('يرجى ملء جميع الحقول بشكل صحيح.'); }
     }
 
     document.getElementById('addButton').addEventListener('click', () => addData("expenses", "descInput", "amountInput", "dateInput"));
@@ -354,37 +454,52 @@
     document.getElementById('addDebtOwedButton').addEventListener('click', () => addData("debtsOwed", "debtOwedDescInput", "debtOwedAmountInput", "debtOwedDateInput"));
     document.getElementById('addDebtIOweButton').addEventListener('click', () => addData("debtsIOwe", "debtIOweDescInput", "debtIOweAmountInput", "debtIOweDateInput"));
 
+    // --- لوحة الأدمن ---
     async function loadAdminPanel() {
         const usersListDiv = document.getElementById('usersList');
         usersListDiv.innerHTML = '<p>جاري تحميل بيانات المستخدمين...</p>';
         
-        const cols = ["expenses", "incomes", "debtsOwed", "debtsIOwe"];
-        const userMap = new Map(); 
-
         try {
+            // جلب جميع المستخدمين المسجلين من مجموعة users
+            const usersSnap = await getDocs(collection(db, "users"));
+            let usersMap = new Map();
+            
+            usersSnap.forEach(u => {
+                usersMap.set(u.id, { 
+                    name: u.data().name || 'بدون اسم', 
+                    email: u.data().email || 'بدون بريد',
+                    count: 0 
+                });
+            });
+
+            // حساب عدد سجلات كل مستخدم
+            const cols = ["expenses", "incomes", "debtsOwed", "debtsIOwe"];
             for (const colName of cols) {
                 const snap = await getDocs(collection(db, colName));
                 snap.forEach(d => {
                     const data = d.data();
-                    if (data.userId) {
-                        if (!userMap.has(data.userId)) userMap.set(data.userId, { count: 0 });
-                        userMap.get(data.userId).count += 1;
+                    if (data.userId && usersMap.has(data.userId)) {
+                        usersMap.get(data.userId).count += 1;
                     }
                 });
             }
 
-            if (userMap.size === 0) {
-                usersListDiv.innerHTML = '<p>لا يوجد مستخدمون لديهم بيانات حتى الآن.</p>';
+            if (usersMap.size === 0) {
+                usersListDiv.innerHTML = '<p>لا يوجد مستخدمون مسجلون حتى الآن.</p>';
                 return;
             }
 
             usersListDiv.innerHTML = '';
-            userMap.forEach((info, userId) => {
+            usersMap.forEach((info, userId) => {
                 const row = document.createElement('div');
                 row.className = 'user-row';
                 row.innerHTML = `
-                    <span>معرف المستخدم: ${userId.substring(0, 10)}... (لديه ${info.count} سجل)</span>
-                    <button class="btn-delete" onclick="deleteUserData('${userId}')">حذف كل بياناته</button>
+                    <div class="user-info">
+                        <strong>👤 ${info.name}</strong>
+                        <span>📧 ${info.email}</span>
+                        <span>📊 عدد السجلات: ${info.count}</span>
+                    </div>
+                    <button class="btn-delete" onclick="deleteUserData('${userId}', '${info.name}')">حذف كل بياناته</button>
                 `;
                 usersListDiv.appendChild(row);
             });
@@ -394,8 +509,10 @@
         }
     }
 
-    window.deleteUserData = async function(userId) {
-        if (!confirm('هل أنت متأكد من حذف جميع بيانات هذا المستخدم نهائياً؟')) return;
+    // دالة حذف بيانات المستخدم
+    window.deleteUserData = async function(userId, userName) {
+        if (!confirm(`هل أنت متأكد من حذف جميع بيانات (${userName}) نهائياً؟`)) return;
+        
         const cols = ["expenses", "incomes", "debtsOwed", "debtsIOwe"];
         let deletedCount = 0;
 
@@ -408,8 +525,12 @@
                     deletedCount++;
                 }
             }
-            alert(`تم حذف ${deletedCount} سجل بنجاح.`);
-            loadAdminPanel(); 
+            
+            // حذف ملف المستخدم نفسه من مجموعة users
+            await deleteDoc(doc(db, "users", userId));
+            
+            alert(`تم حذف (${userName}) وعدد ${deletedCount} سجل من بياناته بنجاح.`);
+            loadAdminPanel(); // تحديث القائمة
         } catch (error) {
             alert('فشل في الحذف. قد لا تمتلك الصلاحيات الكافية.');
             console.error(error);
