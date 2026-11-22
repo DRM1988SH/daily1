@@ -3,489 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدخل والمنصرفات والديون - مزامنة لحظية</title>
+    <title>نظام الحسابات المالية الشخصية (مع لوحة الأدمن)</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
+        th, td { border: 1.5px solid #0f0f0f; padding: 8px; text-align: center; word-break: break-word; }
+        th { background-color: #f5f9f5; color: rgb(207, 28, 28); }
+        .content { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        button { background-color: #4CAF50; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; transition: 0.2s; }
+        button:hover { opacity: 0.9; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="password"] { padding: 10px; margin: 5px 0; width: calc(100% - 22px); border: 1px solid #ccc; border-radius: 5px; font-family: inherit; }
+        
+        .section-title { color: #1b5e20; border-right: 5px solid #4CAF50; padding-right: 10px; margin-top: 30px; }
+        .income-section { background-color: #e3f2fd; padding: 15px; margin-top: 20px; border-radius: 5px; }
+        .debt-owed-section { background-color: #fff8e1; padding: 15px; margin-top: 20px; border-radius: 5px; }
+        .debt-i-owe-section { background-color: #fce4ec; padding: 15px; margin-top: 20px; border-radius: 5px; }
+        
+        .total-row td { background-color: #e8f5e9; font-weight: bold; color: #1b5e20; }
+        .income-row td { background-color: #e3f2fd; font-weight: bold; color: #0d47a1; }
+        .debt-owed-row td { background-color: #fff8e1; font-weight: bold; color: #e65100; }
+        .debt-i-owe-row td { background-color: #fce4ec; font-weight: bold; color: #b71c1c; }
+        .balance-row td { background-color: #fff3e0; font-weight: bold; color: #e65100; }
+        .net-worth-row td { background-color: #e8eaf6; font-weight: bold; color: #283593; font-size: 1.1em; }
+        
+        .table-wrapper { width: 100%; overflow-x: auto; }
+        .table-wrapper table { min-width: 480px; }
+        
+        .auth-container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        .auth-container h2 { color: #333; }
+        .auth-container input { width: 100%; margin-bottom: 15px; }
+        .auth-container button { width: 100%; padding: 12px; font-size: 16px; }
+        .auth-toggle { margin-top: 15px; color: #1976d2; cursor: pointer; text-decoration: underline; }
+        #logoutBtn { background-color: #d32f2f; float: left; margin-bottom: 20px; }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
+        #adminPanel { display: none; background: #fff3e0; padding: 20px; margin-bottom: 30px; border: 2px dashed #e65100; border-radius: 10px; }
+        #adminPanel h2 { color: #e65100; margin-top: 0; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ffcc80; }
+        .user-row span { font-weight: bold; color: #333; }
+        .btn-delete { background-color: #d32f2f; padding: 6px 12px; font-size: 0.9em; }
 
-        header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        header img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            text-align: right;
-        }
-
-        th, td {
-            border: 1.5px solid #0f0f0f;
-            padding: 8px;
-            text-align: center;
-            word-break: break-word;
-        }
-
-        th {
-            background-color: #f5f9f5;
-            color: rgb(207, 28, 28);
-        }
-
-        .content {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.2s ease;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        input[type="text"], input[type="number"], input[type="date"] {
-            padding: 10px;
-            margin: 5px 0;
-            width: calc(100% - 22px);
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-family: inherit;
-        }
-
-        .filter-section {
-            background-color: #fff;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        .filter-section input {
-            width: auto;
-            margin: 5px;
-        }
-
-        .total-row td {
-            background-color: #e8f5e9;
-            font-weight: bold;
-            color: #1b5e20;
-        }
-
-        .income-section {
-            background-color: #e3f2fd;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        .income-section button {
-            background-color: #1976d2;
-        }
-
-        .income-row td {
-            background-color: #e3f2fd;
-            font-weight: bold;
-            color: #0d47a1;
-        }
-
-        .balance-row td {
-            background-color: #fff3e0;
-            font-weight: bold;
-            color: #e65100;
-        }
-
-        .income-table th {
-            background-color: #e3f2fd;
-            color: #0d47a1;
-        }
-
-        .section-title {
-            color: #1b5e20;
-            border-right: 5px solid #4CAF50;
-            padding-right: 10px;
-            margin-top: 30px;
-        }
-
-        .section-title-income {
-            color: #0d47a1;
-            border-right: 5px solid #1976d2;
-            padding-right: 10px;
-            margin-top: 30px;
-        }
-
-        .debt-owed-section {
-            background-color: #fff8e1;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        .debt-owed-section button {
-            background-color: #f9a825;
-        }
-
-        .debt-owed-table th {
-            background-color: #fff8e1;
-            color: #e65100;
-        }
-
-        .debt-owed-row td {
-            background-color: #fff8e1;
-            font-weight: bold;
-            color: #e65100;
-        }
-
-        .debt-i-owe-section {
-            background-color: #fce4ec;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        .debt-i-owe-section button {
-            background-color: #c62828;
-        }
-
-        .debt-i-owe-table th {
-            background-color: #fce4ec;
-            color: #b71c1c;
-        }
-
-        .debt-i-owe-row td {
-            background-color: #fce4ec;
-            font-weight: bold;
-            color: #b71c1c;
-        }
-
-        .section-title-debt-owed {
-            color: #e65100;
-            border-right: 5px solid #f9a825;
-            padding-right: 10px;
-            margin-top: 30px;
-        }
-
-        .section-title-debt-i-owe {
-            color: #b71c1c;
-            border-right: 5px solid #c62828;
-            padding-right: 10px;
-            margin-top: 30px;
-        }
-
-        .net-worth-section {
-            background-color: #e8eaf6;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        .net-worth-row td {
-            background-color: #e8eaf6;
-            font-weight: bold;
-            color: #283593;
-            font-size: 1.1em;
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .table-wrapper table {
-            min-width: 480px;
-        }
-
-        .delete-btn {
-            background-color: #e53935;
-            padding: 5px 10px;
-            font-size: 0.8em;
-            border-radius: 3px;
-        }
-
-        .delete-btn:hover {
-            background-color: #b71c1c;
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                padding: 12px;
-            }
-
-            header {
-                padding: 14px 10px;
-            }
-
-            h1 {
-                font-size: 1.4em;
-            }
-
-            .section-title,
-            .section-title-income,
-            .section-title-debt-owed,
-            .section-title-debt-i-owe {
-                font-size: 1.1em;
-            }
-
-            th, td {
-                padding: 6px 4px;
-                font-size: 0.9em;
-            }
-
-            button {
-                padding: 8px 14px;
-                font-size: 0.9em;
-                width: 100%;
-                margin-top: 6px;
-            }
-
-            .filter-section input {
-                width: 100%;
-                margin: 4px 0;
-            }
-
-            .filter-section label {
-                display: block;
-                margin-top: 6px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.2em;
-            }
-
-            th, td {
-                padding: 5px 3px;
-                font-size: 0.8em;
-            }
-
-            input[type="text"], input[type="number"], input[type="date"] {
-                padding: 8px;
-                font-size: 0.9em;
-            }
-
-            .table-wrapper table {
-                min-width: 360px;
-            }
+        @media (max-width: 768px) { 
+            button { width: 100%; margin-top: 6px; } 
+            input[type="text"], input[type="number"], input[type="date"] { width: 100%; } 
+            .user-row { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
 <body>
+
 <header>
-    <img src="https://www.shutterstock.com/image-photo/businessman-schedules-meeting-planning-marks-260nw-2441633113.jpg" alt="Work Schedules" width="15%">
-    <p>الدخل والمنصرفات والديون</p>
+    <p>نظام الحسابات المالية الشخصية</p>
 </header>
 
-<div class="content">
-    <!-- قسم إدخال المنصرفات -->
+<!-- شاشة تسجيل الدخول / إنشاء الحساب -->
+<div id="authSection" class="auth-container">
+    <h2 id="authTitle">تسجيل الدخول</h2>
+    <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
+    <input type="password" id="passwordInput" placeholder="كلمة المرور">
+    <button id="authButton">دخول</button>
+    <p class="auth-toggle" id="toggleAuth">ليس لديك حساب؟ إنشاء حساب جديد</p>
+    <p id="authError" style="color: red; font-size: 14px; margin-top: 10px;"></p>
+</div>
+
+<!-- التطبيق الأساسي -->
+<div class="content" id="mainApp" style="display: none;">
+    <button id="logoutBtn">تسجيل الخروج</button>
+    <div style="clear:both;"></div>
+
+    <div id="adminPanel">
+        <h2>🛡️ لوحة تحكم الأدمن (خاصة بك)</h2>
+        <p>هنا يمكنك رؤية جميع المستخدمين المسجلين وحذف بياناتهم بالكامل (تصفير الحساب).</p>
+        <div id="usersList"></div>
+    </div>
+    
     <div>
         <h1>تتبع المنصرفات اليومية</h1>
-        <p>تتبع المنصرفات اليومية يساعدك على إدارة أموالك بشكل أفضل وتحقيق أهدافك المالية.</p>
         <input type="text" id="descInput" placeholder="أدخل وصف المنصرف">
         <input type="number" id="amountInput" placeholder="أدخل المبلغ">
-        <input type="date" id="dateInput" placeholder="أدخل التاريخ">
+        <input type="date" id="dateInput">
         <button id="addButton">إضافة المنصرف</button>
-
-        <div class="filter-section">
-            <h3>تصفية التقرير بين تاريخين:</h3>
-            <label>من: </label>
-            <input type="date" id="fromDate">
-            <label>إلى: </label>
-            <input type="date" id="toDate">
-            <button id="filterButton">تصفية</button>
-            <button id="resetButton">إظهار الكل</button>
-        </div>
     </div>
 
-    <!-- جدول المنصرفات -->
     <div>
         <h2 class="section-title">جدول المنصرفات</h2>
         <div class="table-wrapper">
             <table id="expensesTable">
-                <thead>
-                    <tr>
-                        <td>التاريخ</td>
-                        <td>الوصف</td>
-                        <td>المبلغ</td>
-                        <td>حذف</td>
-                    </tr>
-                </thead>
+                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
                 <tbody id="tableBody"></tbody>
-                <tfoot>
-                    <tr class="total-row">
-                        <td colspan="3">إجمالي المنصرفات</td>
-                        <td id="totalCell">0</td>
-                    </tr>
-                </tfoot>
+                <tfoot><tr class="total-row"><td colspan="2">إجمالي المنصرفات</td><td id="totalCell">0</td></tr></tfoot>
             </table>
         </div>
     </div>
 
-    <!-- قسم إدخال الدخل -->
     <div class="income-section">
-        <h2 class="section-title-income">إضافة دخل</h2>
+        <h2 class="section-title">إضافة دخل</h2>
         <input type="text" id="incomeDescInput" placeholder="أدخل وصف الدخل">
         <input type="number" id="incomeAmountInput" placeholder="أدخل مبلغ الدخل">
-        <input type="date" id="incomeDateInput" placeholder="أدخل تاريخ الدخل">
+        <input type="date" id="incomeDateInput">
         <button id="addIncomeButton">إضافة الدخل</button>
     </div>
 
-    <!-- جدول الدخل -->
     <div>
-        <h2 class="section-title-income">جدول الدخل</h2>
+        <h2 class="section-title">جدول الدخل</h2>
         <div class="table-wrapper">
             <table class="income-table" id="incomeTable">
-                <thead>
-                    <tr>
-                        <td>التاريخ</td>
-                        <td>الوصف</td>
-                        <td>المبلغ</td>
-                        <td>حذف</td>
-                    </tr>
-                </thead>
+                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
                 <tbody id="incomeTableBody"></tbody>
-                <tfoot>
-                    <tr class="income-row">
-                        <td colspan="3">إجمالي الدخل</td>
-                        <td id="totalIncomeCell">0</td>
-                    </tr>
-                </tfoot>
+                <tfoot><tr class="income-row"><td colspan="2">إجمالي الدخل</td><td id="totalIncomeCell">0</td></tr></tfoot>
             </table>
         </div>
     </div>
 
-    <!-- قسم الديون المستحقة لي عند الآخرين -->
     <div class="debt-owed-section">
-        <h2 class="section-title-debt-owed">الديون المستحقة لي عند الآخرين</h2>
+        <h2 class="section-title">الديون المستحقة لي عند الآخرين</h2>
         <input type="text" id="debtOwedDescInput" placeholder="اسم الشخص / وصف الدين">
         <input type="number" id="debtOwedAmountInput" placeholder="أدخل المبلغ">
-        <input type="date" id="debtOwedDateInput" placeholder="أدخل التاريخ">
+        <input type="date" id="debtOwedDateInput">
         <button id="addDebtOwedButton">إضافة دين لي</button>
     </div>
 
-    <!-- جدول الديون المستحقة لي -->
     <div>
-        <h2 class="section-title-debt-owed">جدول الديون المستحقة لي</h2>
+        <h2 class="section-title">جدول الديون المستحقة لي</h2>
         <div class="table-wrapper">
             <table class="debt-owed-table" id="debtOwedTable">
-                <thead>
-                    <tr>
-                        <td>التاريخ</td>
-                        <td>الوصف</td>
-                        <td>المبلغ</td>
-                        <td>حذف</td>
-                    </tr>
-                </thead>
+                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
                 <tbody id="debtOwedTableBody"></tbody>
-                <tfoot>
-                    <tr class="debt-owed-row">
-                        <td colspan="3">إجمالي الديون المستحقة لي</td>
-                        <td id="totalDebtOwedCell">0</td>
-                    </tr>
-                </tfoot>
+                <tfoot><tr class="debt-owed-row"><td colspan="2">إجمالي الديون المستحقة لي</td><td id="totalDebtOwedCell">0</td></tr></tfoot>
             </table>
         </div>
     </div>
 
-    <!-- قسم الديون التي عليّ للآخرين -->
     <div class="debt-i-owe-section">
-        <h2 class="section-title-debt-i-owe">الديون التي عليّ للآخرين</h2>
+        <h2 class="section-title">الديون التي عليّ للآخرين</h2>
         <input type="text" id="debtIOweDescInput" placeholder="اسم الشخص / وصف الدين">
         <input type="number" id="debtIOweAmountInput" placeholder="أدخل المبلغ">
-        <input type="date" id="debtIOweDateInput" placeholder="أدخل التاريخ">
+        <input type="date" id="debtIOweDateInput">
         <button id="addDebtIOweButton">إضافة دين عليّ</button>
     </div>
 
-    <!-- جدول الديون التي عليّ -->
     <div>
-        <h2 class="section-title-debt-i-owe">جدول الديون التي عليّ</h2>
+        <h2 class="section-title">جدول الديون التي عليّ</h2>
         <div class="table-wrapper">
             <table class="debt-i-owe-table" id="debtIOweTable">
-                <thead>
-                    <tr>
-                        <td>التاريخ</td>
-                        <td>الوصف</td>
-                        <td>المبلغ</td>
-                        <td>حذف</td>
-                    </tr>
-                </thead>
+                <thead><tr><td>التاريخ</td><td>الوصف</td><td>المبلغ</td></tr></thead>
                 <tbody id="debtIOweTableBody"></tbody>
-                <tfoot>
-                    <tr class="debt-i-owe-row">
-                        <td colspan="3">إجمالي الديون التي عليّ</td>
-                        <td id="totalDebtIOweCell">0</td>
-                    </tr>
-                </tfoot>
+                <tfoot><tr class="debt-i-owe-row"><td colspan="2">إجمالي الديون التي عليّ</td><td id="totalDebtIOweCell">0</td></tr></tfoot>
             </table>
         </div>
     </div>
 
-    <!-- الرصيد الصافي الشامل -->
     <div class="net-worth-section">
         <h2 class="section-title">الملخص المالي الشامل</h2>
         <div class="table-wrapper">
             <table>
                 <tfoot>
-                    <tr class="balance-row">
-                        <td colspan="2">الرصيد (الدخل - المنصرفات)</td>
-                        <td id="balanceCell">0</td>
-                    </tr>
-                    <tr class="net-worth-row">
-                        <td colspan="2">صافي الثروة (الرصيد + ديون لي - ديون عليّ)</td>
-                        <td id="netWorthCell">0</td>
-                    </tr>
+                    <tr class="balance-row"><td colspan="2">الرصيد (الدخل - المنصرفات)</td><td id="balanceCell">0</td></tr>
+                    <tr class="net-worth-row"><td colspan="2">صافي الثروة (الرصيد + ديون لي - ديون عليّ)</td><td id="netWorthCell">0</td></tr>
                 </tfoot>
             </table>
         </div>
     </div>
 </div>
 
-<!-- ==================== سكربت Firebase ==================== -->
 <script type="module">
-    // استيراد وحدات Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
-    import {
-        getFirestore,
-        collection,
-        addDoc,
-        deleteDoc,
-        doc,
-        query,
-        orderBy,
-        onSnapshot
-    } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // تكوين Firebase الخاص بك
+    // ✅ المفتاح الصحيح الذي أرسلته
     const firebaseConfig = {
-        apiKey: "AIzaSyC4sYVSO7InGg62FYpG6ebEJvx14hm-a_I",
+        apiKey: "AIzaSyC4sYVSO7InGg62FYpG6ebEJvx14hm-a_I", 
         authDomain: "daily1-f3ac9.firebaseapp.com",
         projectId: "daily1-f3ac9",
         storageBucket: "daily1-f3ac9.firebasestorage.app",
@@ -494,43 +184,92 @@
         measurementId: "G-BMDSN4Y62N"
     };
 
-    // تهيئة Firebase و Firestore
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const db = getFirestore(app);
+    const auth = getAuth(app);
+    const ADMIN_EMAIL = "mosab649@gmail.com"; // إيميل الأدمن
 
-    // ========== مراجع عناصر DOM ==========
-    const addButton = document.getElementById('addButton');
-    const addIncomeButton = document.getElementById('addIncomeButton');
-    const addDebtOwedButton = document.getElementById('addDebtOwedButton');
-    const addDebtIOweButton = document.getElementById('addDebtIOweButton');
-    const filterButton = document.getElementById('filterButton');
-    const resetButton = document.getElementById('resetButton');
+    let currentUser = null;
+    let isLoginMode = true; 
+    let unsubscribeListeners = []; 
 
-    const descInput = document.getElementById('descInput');
-    const amountInput = document.getElementById('amountInput');
-    const dateInput = document.getElementById('dateInput');
+    const authSection = document.getElementById('authSection');
+    const mainApp = document.getElementById('mainApp');
+    const authTitle = document.getElementById('authTitle');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const authButton = document.getElementById('authButton');
+    const toggleAuth = document.getElementById('toggleAuth');
+    const authError = document.getElementById('authError');
 
-    const incomeDescInput = document.getElementById('incomeDescInput');
-    const incomeAmountInput = document.getElementById('incomeAmountInput');
-    const incomeDateInput = document.getElementById('incomeDateInput');
+    toggleAuth.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        if(isLoginMode) {
+            authTitle.innerText = "تسجيل الدخول";
+            authButton.innerText = "دخول";
+            toggleAuth.innerText = "ليس لديك حساب؟ إنشاء حساب جديد";
+        } else {
+            authTitle.innerText = "إنشاء حساب جديد";
+            authButton.innerText = "تسجيل";
+            toggleAuth.innerText = "لديك حساب بالفعل؟ تسجيل الدخول";
+        }
+        authError.innerText = "";
+    });
 
-    const debtOwedDescInput = document.getElementById('debtOwedDescInput');
-    const debtOwedAmountInput = document.getElementById('debtOwedAmountInput');
-    const debtOwedDateInput = document.getElementById('debtOwedDateInput');
+    authButton.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        authError.innerText = "";
+        
+        if(!email || !password) { authError.innerText = "يرجى إدخال البريد وكلمة المرور."; return; }
 
-    const debtIOweDescInput = document.getElementById('debtIOweDescInput');
-    const debtIOweAmountInput = document.getElementById('debtIOweAmountInput');
-    const debtIOweDateInput = document.getElementById('debtIOweDateInput');
+        try {
+            if(isLoginMode) {
+                await signInWithEmailAndPassword(auth, email, password);
+            } else {
+                await createUserWithEmailAndPassword(auth, email, password);
+            }
+        } catch (error) {
+            console.error(error);
+            if(error.code === 'auth/email-already-in-use') authError.innerText = "هذا البريد مسجل بالفعل.";
+            else if(error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') authError.innerText = "البريد أو كلمة المرور غير صحيحة.";
+            else if(error.code === 'auth/weak-password') authError.innerText = "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
+            else authError.innerText = "حدث خطأ: " + error.message;
+        }
+    });
 
-    const fromDateInput = document.getElementById('fromDate');
-    const toDateInput = document.getElementById('toDate');
+    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+        unsubscribeListeners.forEach(unsub => unsub());
+        unsubscribeListeners = [];
+        
+        if (user) {
+            currentUser = user;
+            authSection.style.display = 'none';
+            mainApp.style.display = 'block';
+            startRealtimeSync();
+
+            if (user.email === ADMIN_EMAIL) {
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAdminPanel();
+            } else {
+                document.getElementById('adminPanel').style.display = 'none';
+            }
+        } else {
+            currentUser = null;
+            authSection.style.display = 'block';
+            mainApp.style.display = 'none';
+            emailInput.value = ''; passwordInput.value = '';
+            document.querySelectorAll('tbody').forEach(el => el.innerHTML = '');
+            document.querySelectorAll('tfoot td:last-child').forEach(el => el.textContent = '0');
+        }
+    });
 
     const tableBody = document.getElementById('tableBody');
     const incomeTableBody = document.getElementById('incomeTableBody');
     const debtOwedTableBody = document.getElementById('debtOwedTableBody');
     const debtIOweTableBody = document.getElementById('debtIOweTableBody');
-
     const totalCell = document.getElementById('totalCell');
     const totalIncomeCell = document.getElementById('totalIncomeCell');
     const totalDebtOwedCell = document.getElementById('totalDebtOwedCell');
@@ -538,213 +277,144 @@
     const balanceCell = document.getElementById('balanceCell');
     const netWorthCell = document.getElementById('netWorthCell');
 
-    // ========== متغيرات لحفظ البيانات الحالية من Firestore ==========
-    let currentExpenses = [];
-    let currentIncomes = [];
-    let currentDebtsOwed = [];
-    let currentDebtsIOwe = [];
-
-    // متغيرات للتصفية
-    let activeFromDate = null;
-    let activeToDate = null;
-
-    // ========== دوال مساعدة ==========
-    function clearInputs(inputs) {
-        inputs.forEach(input => input.value = '');
-    }
-
-    // رسم جدول مع زر حذف
-    function renderTable(tbody, data, totalCellEl, collectionName) {
+    function updateGenericTable(tbody, data, totalCellEl) {
         tbody.innerHTML = '';
         let total = 0;
-        data.forEach(item => {
+        data.forEach(function(item) {
             const row = document.createElement('tr');
-            
-            const dateCell = document.createElement('td');
-            dateCell.textContent = item.date;
-            
-            const descCell = document.createElement('td');
-            descCell.textContent = item.description;
-            
-            const amountCell = document.createElement('td');
-            amountCell.textContent = item.amount;
-            
-            const deleteCell = document.createElement('td');
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'حذف';
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.addEventListener('click', async () => {
-                if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
-                    try {
-                        await deleteDoc(doc(db, collectionName, item.id));
-                        // onSnapshot سيقوم بتحديث الجدول تلقائياً
-                    } catch (e) {
-                        console.error('خطأ في الحذف:', e);
-                        alert('حدث خطأ أثناء الحذف.');
-                    }
-                }
-            });
-            deleteCell.appendChild(deleteBtn);
-            
-            row.appendChild(dateCell);
-            row.appendChild(descCell);
-            row.appendChild(amountCell);
-            row.appendChild(deleteCell);
+            const safeDesc = item.description.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            row.innerHTML = `<td>${item.date}</td><td>${safeDesc}</td><td>${item.amount}</td>`;
             tbody.appendChild(row);
-            total += item.amount;
+            total += Number(item.amount);
         });
-        totalCellEl.textContent = total;
+        totalCellEl.textContent = total.toLocaleString('en-US');
     }
 
-    // تحديث الإجماليات والرصيد
-    function updateTotals() {
-        const totalExp = parseFloat(totalCell.textContent) || 0;
-        const totalInc = parseFloat(totalIncomeCell.textContent) || 0;
-        const totalDOwed = parseFloat(totalDebtOwedCell.textContent) || 0;
-        const totalDIOwe = parseFloat(totalDebtIOweCell.textContent) || 0;
-
-        const balance = totalInc - totalExp;
-        const netWorth = balance + totalDOwed - totalDIOwe;
-
-        balanceCell.textContent = balance;
-        netWorthCell.textContent = netWorth;
+    function updateBalance() {
+        const parseNum = (txt) => parseFloat(txt.replace(/,/g, '')) || 0;
+        const tExp = parseNum(totalCell.textContent);
+        const tInc = parseNum(totalIncomeCell.textContent);
+        const tOwed = parseNum(totalDebtOwedCell.textContent);
+        const tIOwe = parseNum(totalDebtIOweCell.textContent);
+        
+        const balance = tInc - tExp;
+        const netWorth = balance + tOwed - tIOwe;
+        
+        balanceCell.textContent = balance.toLocaleString('en-US');
+        netWorthCell.textContent = netWorth.toLocaleString('en-US');
     }
 
-    // تطبيق التصفية وإعادة الرسم
-    function applyFilterAndRender() {
-        let filteredExpenses = currentExpenses;
-        let filteredIncomes = currentIncomes;
-        let filteredDebtsOwed = currentDebtsOwed;
-        let filteredDebtsIOwe = currentDebtsIOwe;
+    function startRealtimeSync() {
+        if (!currentUser) return;
+        const uid = currentUser.uid;
 
-        if (activeFromDate && activeToDate) {
-            const filterFn = item => item.date >= activeFromDate && item.date <= activeToDate;
-            filteredExpenses = currentExpenses.filter(filterFn);
-            filteredIncomes = currentIncomes.filter(filterFn);
-            filteredDebtsOwed = currentDebtsOwed.filter(filterFn);
-            filteredDebtsIOwe = currentDebtsIOwe.filter(filterFn);
-        }
+        const qExp = query(collection(db, "expenses"), where("userId", "==", uid), orderBy("date", "desc"));
+        unsubscribeListeners.push(onSnapshot(qExp, (snap) => {
+            const data = []; snap.forEach(d => data.push(d.data()));
+            updateGenericTable(tableBody, data, totalCell); updateBalance();
+        }));
 
-        renderTable(tableBody, filteredExpenses, totalCell, 'expenses');
-        renderTable(incomeTableBody, filteredIncomes, totalIncomeCell, 'incomes');
-        renderTable(debtOwedTableBody, filteredDebtsOwed, totalDebtOwedCell, 'debtsOwed');
-        renderTable(debtIOweTableBody, filteredDebtsIOwe, totalDebtIOweCell, 'debtsIOwe');
-        updateTotals();
+        const qInc = query(collection(db, "incomes"), where("userId", "==", uid), orderBy("date", "desc"));
+        unsubscribeListeners.push(onSnapshot(qInc, (snap) => {
+            const data = []; snap.forEach(d => data.push(d.data()));
+            updateGenericTable(incomeTableBody, data, totalIncomeCell); updateBalance();
+        }));
+
+        const qOwed = query(collection(db, "debtsOwed"), where("userId", "==", uid), orderBy("date", "desc"));
+        unsubscribeListeners.push(onSnapshot(qOwed, (snap) => {
+            const data = []; snap.forEach(d => data.push(d.data()));
+            updateGenericTable(debtOwedTableBody, data, totalDebtOwedCell); updateBalance();
+        }));
+
+        const qIOwe = query(collection(db, "debtsIOwe"), where("userId", "==", uid), orderBy("date", "desc"));
+        unsubscribeListeners.push(onSnapshot(qIOwe, (snap) => {
+            const data = []; snap.forEach(d => data.push(d.data()));
+            updateGenericTable(debtIOweTableBody, data, totalDebtIOweCell); updateBalance();
+        }));
     }
 
-    // ========== إعداد مستمعات Firestore (onSnapshot) ==========
-    function listenToCollection(collectionName, dataArray, renderCallback) {
-        const q = query(collection(db, collectionName), orderBy("date", "desc"));
-        onSnapshot(q, (snapshot) => {
-            dataArray.length = 0;
-            snapshot.forEach(doc => {
-                dataArray.push({ id: doc.id, ...doc.data() });
+    async function addData(collectionName, descId, amountId, dateId) {
+        if (!currentUser) return;
+        const desc = document.getElementById(descId).value.trim();
+        const amount = parseFloat(document.getElementById(amountId).value);
+        const date = document.getElementById(dateId).value;
+        
+        if (desc && !isNaN(amount) && date) {
+            await addDoc(collection(db, collectionName), { 
+                description: desc, amount: amount, date: date, userId: currentUser.uid
             });
-            renderCallback();
-        }, (error) => {
-            console.error(`خطأ في الاستماع إلى ${collectionName}:`, error);
-            alert(`حدث خطأ في تحميل البيانات من ${collectionName}. تحقق من اتصالك أو قواعد الأمان.`);
-        });
+            document.getElementById(descId).value = ''; 
+            document.getElementById(amountId).value = ''; 
+            document.getElementById(dateId).value = '';
+        } else { alert('يرجى ملء الحقول بشكل صحيح.'); }
     }
 
-    // بدء الاستماع لكل مجموعة
-    listenToCollection('expenses', currentExpenses, applyFilterAndRender);
-    listenToCollection('incomes', currentIncomes, applyFilterAndRender);
-    listenToCollection('debtsOwed', currentDebtsOwed, applyFilterAndRender);
-    listenToCollection('debtsIOwe', currentDebtsIOwe, applyFilterAndRender);
+    document.getElementById('addButton').addEventListener('click', () => addData("expenses", "descInput", "amountInput", "dateInput"));
+    document.getElementById('addIncomeButton').addEventListener('click', () => addData("incomes", "incomeDescInput", "incomeAmountInput", "incomeDateInput"));
+    document.getElementById('addDebtOwedButton').addEventListener('click', () => addData("debtsOwed", "debtOwedDescInput", "debtOwedAmountInput", "debtOwedDateInput"));
+    document.getElementById('addDebtIOweButton').addEventListener('click', () => addData("debtsIOwe", "debtIOweDescInput", "debtIOweAmountInput", "debtIOweDateInput"));
 
-    // ========== دوال الإضافة إلى Firestore ==========
-    async function addDocument(collectionName, data, inputsToClear) {
+    async function loadAdminPanel() {
+        const usersListDiv = document.getElementById('usersList');
+        usersListDiv.innerHTML = '<p>جاري تحميل بيانات المستخدمين...</p>';
+        
+        const cols = ["expenses", "incomes", "debtsOwed", "debtsIOwe"];
+        const userMap = new Map(); 
+
         try {
-            await addDoc(collection(db, collectionName), {
-                ...data,
-                createdAt: new Date()
+            for (const colName of cols) {
+                const snap = await getDocs(collection(db, colName));
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.userId) {
+                        if (!userMap.has(data.userId)) userMap.set(data.userId, { count: 0 });
+                        userMap.get(data.userId).count += 1;
+                    }
+                });
+            }
+
+            if (userMap.size === 0) {
+                usersListDiv.innerHTML = '<p>لا يوجد مستخدمون لديهم بيانات حتى الآن.</p>';
+                return;
+            }
+
+            usersListDiv.innerHTML = '';
+            userMap.forEach((info, userId) => {
+                const row = document.createElement('div');
+                row.className = 'user-row';
+                row.innerHTML = `
+                    <span>معرف المستخدم: ${userId.substring(0, 10)}... (لديه ${info.count} سجل)</span>
+                    <button class="btn-delete" onclick="deleteUserData('${userId}')">حذف كل بياناته</button>
+                `;
+                usersListDiv.appendChild(row);
             });
-            clearInputs(inputsToClear);
-        } catch (e) {
-            console.error(`خطأ في إضافة مستند إلى ${collectionName}:`, e);
-            alert('حدث خطأ أثناء حفظ البيانات. تحقق من اتصالك.');
+        } catch (error) {
+            usersListDiv.innerHTML = '<p style="color:red;">حدث خطأ أثناء جلب البيانات. تأكد من قواعد الأمان.</p>';
+            console.error(error);
         }
     }
 
-    // إضافة منصرف
-    addButton.addEventListener('click', () => {
-        const description = descInput.value.trim();
-        const amount = parseFloat(amountInput.value);
-        const date = dateInput.value;
+    window.deleteUserData = async function(userId) {
+        if (!confirm('هل أنت متأكد من حذف جميع بيانات هذا المستخدم نهائياً؟')) return;
+        const cols = ["expenses", "incomes", "debtsOwed", "debtsIOwe"];
+        let deletedCount = 0;
 
-        if (description && !isNaN(amount) && date) {
-            addDocument('expenses', { description, amount, date }, [descInput, amountInput, dateInput]);
-        } else {
-            alert('يرجى ملء جميع حقول المنصرف بشكل صحيح.');
+        try {
+            for (const colName of cols) {
+                const q = query(collection(db, colName), where("userId", "==", userId));
+                const snap = await getDocs(q);
+                for (const document of snap.docs) {
+                    await deleteDoc(doc(db, colName, document.id));
+                    deletedCount++;
+                }
+            }
+            alert(`تم حذف ${deletedCount} سجل بنجاح.`);
+            loadAdminPanel(); 
+        } catch (error) {
+            alert('فشل في الحذف. قد لا تمتلك الصلاحيات الكافية.');
+            console.error(error);
         }
-    });
-
-    // إضافة دخل
-    addIncomeButton.addEventListener('click', () => {
-        const description = incomeDescInput.value.trim();
-        const amount = parseFloat(incomeAmountInput.value);
-        const date = incomeDateInput.value;
-
-        if (description && !isNaN(amount) && date) {
-            addDocument('incomes', { description, amount, date }, [incomeDescInput, incomeAmountInput, incomeDateInput]);
-        } else {
-            alert('يرجى ملء جميع حقول الدخل بشكل صحيح.');
-        }
-    });
-
-    // إضافة دين لي
-    addDebtOwedButton.addEventListener('click', () => {
-        const description = debtOwedDescInput.value.trim();
-        const amount = parseFloat(debtOwedAmountInput.value);
-        const date = debtOwedDateInput.value;
-
-        if (description && !isNaN(amount) && date) {
-            addDocument('debtsOwed', { description, amount, date }, [debtOwedDescInput, debtOwedAmountInput, debtOwedDateInput]);
-        } else {
-            alert('يرجى ملء جميع حقول الدين بشكل صحيح.');
-        }
-    });
-
-    // إضافة دين عليّ
-    addDebtIOweButton.addEventListener('click', () => {
-        const description = debtIOweDescInput.value.trim();
-        const amount = parseFloat(debtIOweAmountInput.value);
-        const date = debtIOweDateInput.value;
-
-        if (description && !isNaN(amount) && date) {
-            addDocument('debtsIOwe', { description, amount, date }, [debtIOweDescInput, debtIOweAmountInput, debtIOweDateInput]);
-        } else {
-            alert('يرجى ملء جميع حقول الدين بشكل صحيح.');
-        }
-    });
-
-    // ========== التصفية حسب التاريخ ==========
-    filterButton.addEventListener('click', () => {
-        const from = fromDateInput.value;
-        const to = toDateInput.value;
-
-        if (!from || !to) {
-            alert('يرجى تحديد تاريخ البداية والنهاية.');
-            return;
-        }
-        if (from > to) {
-            alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.');
-            return;
-        }
-
-        activeFromDate = from;
-        activeToDate = to;
-        applyFilterAndRender();
-    });
-
-    resetButton.addEventListener('click', () => {
-        fromDateInput.value = '';
-        toDateInput.value = '';
-        activeFromDate = null;
-        activeToDate = null;
-        applyFilterAndRender();
-    });
+    };
 </script>
 </body>
 </html>
