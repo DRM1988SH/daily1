@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدخل والمنصرفات والديون</title>
+    <title>الدخل والمنصرفات والديون - مزامنة لحظية</title>
     <style>
         * {
             box-sizing: border-box;
@@ -222,7 +222,17 @@
             min-width: 480px;
         }
 
-        /* تحسينات للشاشات الصغيرة */
+        .delete-btn {
+            background-color: #e53935;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 3px;
+        }
+
+        .delete-btn:hover {
+            background-color: #b71c1c;
+        }
+
         @media (max-width: 768px) {
             .content {
                 padding: 12px;
@@ -290,20 +300,21 @@
 <body>
 <header>
     <img src="https://www.shutterstock.com/image-photo/businessman-schedules-meeting-planning-marks-260nw-2441633113.jpg" alt="Work Schedules" width="15%">
-    <p>الحسابات اليومية   </p>
+    <p>الدخل والمنصرفات والديون</p>
 </header>
 
 <div class="content">
     <!-- قسم إدخال المنصرفات -->
     <div>
-        <h1>المنصرفات اليومية</h1>
+        <h1>تتبع المنصرفات اليومية</h1>
+        <p>تتبع المنصرفات اليومية يساعدك على إدارة أموالك بشكل أفضل وتحقيق أهدافك المالية.</p>
         <input type="text" id="descInput" placeholder="أدخل وصف المنصرف">
         <input type="number" id="amountInput" placeholder="أدخل المبلغ">
         <input type="date" id="dateInput" placeholder="أدخل التاريخ">
         <button id="addButton">إضافة المنصرف</button>
 
         <div class="filter-section">
-            <h3>تقرير مالي مفصل :</h3>
+            <h3>تصفية التقرير بين تاريخين:</h3>
             <label>من: </label>
             <input type="date" id="fromDate">
             <label>إلى: </label>
@@ -323,12 +334,13 @@
                         <td>التاريخ</td>
                         <td>الوصف</td>
                         <td>المبلغ</td>
+                        <td>حذف</td>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
                 <tfoot>
                     <tr class="total-row">
-                        <td colspan="2">إجمالي المنصرفات</td>
+                        <td colspan="3">إجمالي المنصرفات</td>
                         <td id="totalCell">0</td>
                     </tr>
                 </tfoot>
@@ -355,12 +367,13 @@
                         <td>التاريخ</td>
                         <td>الوصف</td>
                         <td>المبلغ</td>
+                        <td>حذف</td>
                     </tr>
                 </thead>
                 <tbody id="incomeTableBody"></tbody>
                 <tfoot>
                     <tr class="income-row">
-                        <td colspan="2">إجمالي الدخل</td>
+                        <td colspan="3">إجمالي الدخل</td>
                         <td id="totalIncomeCell">0</td>
                     </tr>
                 </tfoot>
@@ -387,12 +400,13 @@
                         <td>التاريخ</td>
                         <td>الوصف</td>
                         <td>المبلغ</td>
+                        <td>حذف</td>
                     </tr>
                 </thead>
                 <tbody id="debtOwedTableBody"></tbody>
                 <tfoot>
                     <tr class="debt-owed-row">
-                        <td colspan="2">إجمالي الديون المستحقة لي</td>
+                        <td colspan="3">إجمالي الديون المستحقة لي</td>
                         <td id="totalDebtOwedCell">0</td>
                     </tr>
                 </tfoot>
@@ -419,12 +433,13 @@
                         <td>التاريخ</td>
                         <td>الوصف</td>
                         <td>المبلغ</td>
+                        <td>حذف</td>
                     </tr>
                 </thead>
                 <tbody id="debtIOweTableBody"></tbody>
                 <tfoot>
                     <tr class="debt-i-owe-row">
-                        <td colspan="2">إجمالي الديون التي عليّ</td>
+                        <td colspan="3">إجمالي الديون التي عليّ</td>
                         <td id="totalDebtIOweCell">0</td>
                     </tr>
                 </tfoot>
@@ -452,39 +467,39 @@
     </div>
 </div>
 
-<script>
-    // ==== نظام التخزين المحلي (localStorage) لحفظ البيانات ====
-    const STORAGE_KEYS = {
-        expenses: 'app_expenses',
-        incomes: 'app_incomes',
-        debtsOwed: 'app_debtsOwed',
-        debtsIOwe: 'app_debtsIOwe'
+<!-- ==================== سكربت Firebase ==================== -->
+<script type="module">
+    // استيراد وحدات Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        deleteDoc,
+        doc,
+        query,
+        orderBy,
+        onSnapshot
+    } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+    // تكوين Firebase الخاص بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyC4sYVSO7InGg62FYpG6ebEJvx14hm-a_I",
+        authDomain: "daily1-f3ac9.firebaseapp.com",
+        projectId: "daily1-f3ac9",
+        storageBucket: "daily1-f3ac9.firebasestorage.app",
+        messagingSenderId: "597690630966",
+        appId: "1:597690630966:web:cfb8a7ccc0f00ad49ba997",
+        measurementId: "G-BMDSN4Y62N"
     };
 
-    function loadFromStorage(key, fallback) {
-        try {
-            const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : fallback;
-        } catch (e) {
-            return fallback;
-        }
-    }
+    // تهيئة Firebase و Firestore
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
 
-    function saveToStorage(key, data) {
-        try {
-            localStorage.setItem(key, JSON.stringify(data));
-        } catch (e) {
-            console.warn('تعذر حفظ البيانات في المتصفح:', e);
-        }
-    }
-
-    // مصفوفات البيانات المحملة من التخزين المحلي
-    let expenses = loadFromStorage(STORAGE_KEYS.expenses, []);
-    let incomes = loadFromStorage(STORAGE_KEYS.incomes, []);
-    let debtsOwedToMe = loadFromStorage(STORAGE_KEYS.debtsOwed, []);
-    let debtsIOwe = loadFromStorage(STORAGE_KEYS.debtsIOwe, []);
-
-    // ==== المراجع للعناصر ====
+    // ========== مراجع عناصر DOM ==========
     const addButton = document.getElementById('addButton');
     const addIncomeButton = document.getElementById('addIncomeButton');
     const addDebtOwedButton = document.getElementById('addDebtOwedButton');
@@ -523,153 +538,213 @@
     const balanceCell = document.getElementById('balanceCell');
     const netWorthCell = document.getElementById('netWorthCell');
 
-    // ==== دوال التحديث ====
-    function updateGenericTable(tbody, data, totalCellEl) {
+    // ========== متغيرات لحفظ البيانات الحالية من Firestore ==========
+    let currentExpenses = [];
+    let currentIncomes = [];
+    let currentDebtsOwed = [];
+    let currentDebtsIOwe = [];
+
+    // متغيرات للتصفية
+    let activeFromDate = null;
+    let activeToDate = null;
+
+    // ========== دوال مساعدة ==========
+    function clearInputs(inputs) {
+        inputs.forEach(input => input.value = '');
+    }
+
+    // رسم جدول مع زر حذف
+    function renderTable(tbody, data, totalCellEl, collectionName) {
         tbody.innerHTML = '';
         let total = 0;
-        data.forEach(function(item) {
+        data.forEach(item => {
             const row = document.createElement('tr');
+            
             const dateCell = document.createElement('td');
             dateCell.textContent = item.date;
+            
             const descCell = document.createElement('td');
             descCell.textContent = item.description;
+            
             const amountCell = document.createElement('td');
             amountCell.textContent = item.amount;
+            
+            const deleteCell = document.createElement('td');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'حذف';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
+                    try {
+                        await deleteDoc(doc(db, collectionName, item.id));
+                        // onSnapshot سيقوم بتحديث الجدول تلقائياً
+                    } catch (e) {
+                        console.error('خطأ في الحذف:', e);
+                        alert('حدث خطأ أثناء الحذف.');
+                    }
+                }
+            });
+            deleteCell.appendChild(deleteBtn);
+            
             row.appendChild(dateCell);
             row.appendChild(descCell);
             row.appendChild(amountCell);
+            row.appendChild(deleteCell);
             tbody.appendChild(row);
             total += item.amount;
         });
         totalCellEl.textContent = total;
     }
 
-    function updateAllTables(filtered) {
-        const exp = filtered ? filtered.expenses : expenses;
-        const inc = filtered ? filtered.incomes : incomes;
-        const dOwed = filtered ? filtered.debtsOwed : debtsOwedToMe;
-        const dIOwe = filtered ? filtered.debtsIOwe : debtsIOwe;
+    // تحديث الإجماليات والرصيد
+    function updateTotals() {
+        const totalExp = parseFloat(totalCell.textContent) || 0;
+        const totalInc = parseFloat(totalIncomeCell.textContent) || 0;
+        const totalDOwed = parseFloat(totalDebtOwedCell.textContent) || 0;
+        const totalDIOwe = parseFloat(totalDebtIOweCell.textContent) || 0;
 
-        updateGenericTable(tableBody, exp, totalCell);
-        updateGenericTable(incomeTableBody, inc, totalIncomeCell);
-        updateGenericTable(debtOwedTableBody, dOwed, totalDebtOwedCell);
-        updateGenericTable(debtIOweTableBody, dIOwe, totalDebtIOweCell);
-        updateBalance();
-    }
-
-    function updateBalance() {
-        const totalExpenses = parseFloat(totalCell.textContent) || 0;
-        const totalIncome = parseFloat(totalIncomeCell.textContent) || 0;
-        const totalDebtOwed = parseFloat(totalDebtOwedCell.textContent) || 0;
-        const totalDebtIOwe = parseFloat(totalDebtIOweCell.textContent) || 0;
-
-        const balance = totalIncome - totalExpenses;
-        const netWorth = balance + totalDebtOwed - totalDebtIOwe;
+        const balance = totalInc - totalExp;
+        const netWorth = balance + totalDOwed - totalDIOwe;
 
         balanceCell.textContent = balance;
         netWorthCell.textContent = netWorth;
     }
 
-    function clearInputs(inputs) {
-        inputs.forEach(function(input) {
-            input.value = '';
+    // تطبيق التصفية وإعادة الرسم
+    function applyFilterAndRender() {
+        let filteredExpenses = currentExpenses;
+        let filteredIncomes = currentIncomes;
+        let filteredDebtsOwed = currentDebtsOwed;
+        let filteredDebtsIOwe = currentDebtsIOwe;
+
+        if (activeFromDate && activeToDate) {
+            const filterFn = item => item.date >= activeFromDate && item.date <= activeToDate;
+            filteredExpenses = currentExpenses.filter(filterFn);
+            filteredIncomes = currentIncomes.filter(filterFn);
+            filteredDebtsOwed = currentDebtsOwed.filter(filterFn);
+            filteredDebtsIOwe = currentDebtsIOwe.filter(filterFn);
+        }
+
+        renderTable(tableBody, filteredExpenses, totalCell, 'expenses');
+        renderTable(incomeTableBody, filteredIncomes, totalIncomeCell, 'incomes');
+        renderTable(debtOwedTableBody, filteredDebtsOwed, totalDebtOwedCell, 'debtsOwed');
+        renderTable(debtIOweTableBody, filteredDebtsIOwe, totalDebtIOweCell, 'debtsIOwe');
+        updateTotals();
+    }
+
+    // ========== إعداد مستمعات Firestore (onSnapshot) ==========
+    function listenToCollection(collectionName, dataArray, renderCallback) {
+        const q = query(collection(db, collectionName), orderBy("date", "desc"));
+        onSnapshot(q, (snapshot) => {
+            dataArray.length = 0;
+            snapshot.forEach(doc => {
+                dataArray.push({ id: doc.id, ...doc.data() });
+            });
+            renderCallback();
+        }, (error) => {
+            console.error(`خطأ في الاستماع إلى ${collectionName}:`, error);
+            alert(`حدث خطأ في تحميل البيانات من ${collectionName}. تحقق من اتصالك أو قواعد الأمان.`);
         });
     }
 
-    // ==== إضافة البيانات ====
+    // بدء الاستماع لكل مجموعة
+    listenToCollection('expenses', currentExpenses, applyFilterAndRender);
+    listenToCollection('incomes', currentIncomes, applyFilterAndRender);
+    listenToCollection('debtsOwed', currentDebtsOwed, applyFilterAndRender);
+    listenToCollection('debtsIOwe', currentDebtsIOwe, applyFilterAndRender);
+
+    // ========== دوال الإضافة إلى Firestore ==========
+    async function addDocument(collectionName, data, inputsToClear) {
+        try {
+            await addDoc(collection(db, collectionName), {
+                ...data,
+                createdAt: new Date()
+            });
+            clearInputs(inputsToClear);
+        } catch (e) {
+            console.error(`خطأ في إضافة مستند إلى ${collectionName}:`, e);
+            alert('حدث خطأ أثناء حفظ البيانات. تحقق من اتصالك.');
+        }
+    }
+
+    // إضافة منصرف
     addButton.addEventListener('click', () => {
         const description = descInput.value.trim();
         const amount = parseFloat(amountInput.value);
         const date = dateInput.value;
 
         if (description && !isNaN(amount) && date) {
-            expenses.push({ description, amount, date });
-            saveToStorage(STORAGE_KEYS.expenses, expenses);
-            updateAllTables();
-            clearInputs([descInput, amountInput, dateInput]);
+            addDocument('expenses', { description, amount, date }, [descInput, amountInput, dateInput]);
         } else {
             alert('يرجى ملء جميع حقول المنصرف بشكل صحيح.');
         }
     });
 
+    // إضافة دخل
     addIncomeButton.addEventListener('click', () => {
         const description = incomeDescInput.value.trim();
         const amount = parseFloat(incomeAmountInput.value);
         const date = incomeDateInput.value;
 
         if (description && !isNaN(amount) && date) {
-            incomes.push({ description, amount, date });
-            saveToStorage(STORAGE_KEYS.incomes, incomes);
-            updateAllTables();
-            clearInputs([incomeDescInput, incomeAmountInput, incomeDateInput]);
+            addDocument('incomes', { description, amount, date }, [incomeDescInput, incomeAmountInput, incomeDateInput]);
         } else {
             alert('يرجى ملء جميع حقول الدخل بشكل صحيح.');
         }
     });
 
+    // إضافة دين لي
     addDebtOwedButton.addEventListener('click', () => {
         const description = debtOwedDescInput.value.trim();
         const amount = parseFloat(debtOwedAmountInput.value);
         const date = debtOwedDateInput.value;
 
         if (description && !isNaN(amount) && date) {
-            debtsOwedToMe.push({ description, amount, date });
-            saveToStorage(STORAGE_KEYS.debtsOwed, debtsOwedToMe);
-            updateAllTables();
-            clearInputs([debtOwedDescInput, debtOwedAmountInput, debtOwedDateInput]);
+            addDocument('debtsOwed', { description, amount, date }, [debtOwedDescInput, debtOwedAmountInput, debtOwedDateInput]);
         } else {
             alert('يرجى ملء جميع حقول الدين بشكل صحيح.');
         }
     });
 
+    // إضافة دين عليّ
     addDebtIOweButton.addEventListener('click', () => {
         const description = debtIOweDescInput.value.trim();
         const amount = parseFloat(debtIOweAmountInput.value);
         const date = debtIOweDateInput.value;
 
         if (description && !isNaN(amount) && date) {
-            debtsIOwe.push({ description, amount, date });
-            saveToStorage(STORAGE_KEYS.debtsIOwe, debtsIOwe);
-            updateAllTables();
-            clearInputs([debtIOweDescInput, debtIOweAmountInput, debtIOweDateInput]);
+            addDocument('debtsIOwe', { description, amount, date }, [debtIOweDescInput, debtIOweAmountInput, debtIOweDateInput]);
         } else {
             alert('يرجى ملء جميع حقول الدين بشكل صحيح.');
         }
     });
 
-    // ==== التصفية ====
+    // ========== التصفية حسب التاريخ ==========
     filterButton.addEventListener('click', () => {
-        const fromDate = fromDateInput.value;
-        const toDate = toDateInput.value;
+        const from = fromDateInput.value;
+        const to = toDateInput.value;
 
-        if (!fromDate || !toDate) {
+        if (!from || !to) {
             alert('يرجى تحديد تاريخ البداية والنهاية.');
             return;
         }
-        if (fromDate > toDate) {
+        if (from > to) {
             alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.');
             return;
         }
 
-        const filtered = {
-            expenses: expenses.filter(item => item.date >= fromDate && item.date <= toDate),
-            incomes: incomes.filter(item => item.date >= fromDate && item.date <= toDate),
-            debtsOwed: debtsOwedToMe.filter(item => item.date >= fromDate && item.date <= toDate),
-            debtsIOwe: debtsIOwe.filter(item => item.date >= fromDate && item.date <= toDate)
-        };
-
-        updateAllTables(filtered);
+        activeFromDate = from;
+        activeToDate = to;
+        applyFilterAndRender();
     });
 
     resetButton.addEventListener('click', () => {
         fromDateInput.value = '';
         toDateInput.value = '';
-        updateAllTables();
+        activeFromDate = null;
+        activeToDate = null;
+        applyFilterAndRender();
     });
-
-    // ==== تحميل البيانات عند فتح الصفحة ====
-    // يتم عرض البيانات المحفوظة سابقاً (بعد تحديث F5) في الجداول
-    updateAllTables();
 </script>
 </body>
 </html>
