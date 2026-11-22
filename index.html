@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدخل والمنصرفات والديون</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        th, td {
+            border: 1.5px solid #0f0f0f;
+            padding: 8px;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        th {
+            background-color: #f5f9f5;
+            color: rgb(207, 28, 28);
+        }
+
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"] {
+            padding: 10px;
+            margin: 5px 0;
+            width: calc(100% - 22px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        .filter-section {
+            background-color: #fff;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .filter-section input {
+            width: auto;
+            margin: 5px;
+        }
+
+        .total-row td {
+            background-color: #e8f5e9;
+            font-weight: bold;
+            color: #1b5e20;
+        }
+
+        .income-section {
+            background-color: #e3f2fd;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .income-section button {
+            background-color: #1976d2;
+        }
+
+        .income-row td {
+            background-color: #e3f2fd;
+            font-weight: bold;
+            color: #0d47a1;
+        }
+
+        .balance-row td {
+            background-color: #fff3e0;
+            font-weight: bold;
+            color: #e65100;
+        }
+
+        .income-table th {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .section-title {
+            color: #1b5e20;
+            border-right: 5px solid #4CAF50;
+            padding-right: 10px;
+            margin-top: 30px;
+        }
+
+        .section-title-income {
+            color: #0d47a1;
+            border-right: 5px solid #1976d2;
+            padding-right: 10px;
+            margin-top: 30px;
+        }
+
+        .debt-owed-section {
+            background-color: #fff8e1;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .debt-owed-section button {
+            background-color: #f9a825;
+        }
+
+        .debt-owed-table th {
+            background-color: #fff8e1;
+            color: #e65100;
+        }
+
+        .debt-owed-row td {
+            background-color: #fff8e1;
+            font-weight: bold;
+            color: #e65100;
+        }
+
+        .debt-i-owe-section {
+            background-color: #fce4ec;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .debt-i-owe-section button {
+            background-color: #c62828;
+        }
+
+        .debt-i-owe-table th {
+            background-color: #fce4ec;
+            color: #b71c1c;
+        }
+
+        .debt-i-owe-row td {
+            background-color: #fce4ec;
+            font-weight: bold;
+            color: #b71c1c;
+        }
+
+        .section-title-debt-owed {
+            color: #e65100;
+            border-right: 5px solid #f9a825;
+            padding-right: 10px;
+            margin-top: 30px;
+        }
+
+        .section-title-debt-i-owe {
+            color: #b71c1c;
+            border-right: 5px solid #c62828;
+            padding-right: 10px;
+            margin-top: 30px;
+        }
+
+        .net-worth-section {
+            background-color: #e8eaf6;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .net-worth-row td {
+            background-color: #e8eaf6;
+            font-weight: bold;
+            color: #283593;
+            font-size: 1.1em;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-wrapper table {
+            min-width: 480px;
+        }
+
+        /* تحسينات للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .content {
+                padding: 12px;
+            }
+
+            header {
+                padding: 14px 10px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            .section-title,
+            .section-title-income,
+            .section-title-debt-owed,
+            .section-title-debt-i-owe {
+                font-size: 1.1em;
+            }
+
+            th, td {
+                padding: 6px 4px;
+                font-size: 0.9em;
+            }
+
+            button {
+                padding: 8px 14px;
+                font-size: 0.9em;
+                width: 100%;
+                margin-top: 6px;
+            }
+
+            .filter-section input {
+                width: 100%;
+                margin: 4px 0;
+            }
+
+            .filter-section label {
+                display: block;
+                margin-top: 6px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2em;
+            }
+
+            th, td {
+                padding: 5px 3px;
+                font-size: 0.8em;
+            }
+
+            input[type="text"], input[type="number"], input[type="date"] {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+
+            .table-wrapper table {
+                min-width: 360px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <img src="https://www.shutterstock.com/image-photo/businessman-schedules-meeting-planning-marks-260nw-2441633113.jpg" alt="Work Schedules" width="15%">
+    <p>الحسابات اليومية   </p>
+</header>
+
+<div class="content">
+    <!-- قسم إدخال المنصرفات -->
+    <div>
+        <h1>المنصرفات اليومية</h1>
+        <input type="text" id="descInput" placeholder="أدخل وصف المنصرف">
+        <input type="number" id="amountInput" placeholder="أدخل المبلغ">
+        <input type="date" id="dateInput" placeholder="أدخل التاريخ">
+        <button id="addButton">إضافة المنصرف</button>
+
+        <div class="filter-section">
+            <h3>تقرير مالي مفصل :</h3>
+            <label>من: </label>
+            <input type="date" id="fromDate">
+            <label>إلى: </label>
+            <input type="date" id="toDate">
+            <button id="filterButton">تصفية</button>
+            <button id="resetButton">إظهار الكل</button>
+        </div>
+    </div>
+
+    <!-- جدول المنصرفات -->
+    <div>
+        <h2 class="section-title">جدول المنصرفات</h2>
+        <div class="table-wrapper">
+            <table id="expensesTable">
+                <thead>
+                    <tr>
+                        <td>التاريخ</td>
+                        <td>الوصف</td>
+                        <td>المبلغ</td>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="2">إجمالي المنصرفات</td>
+                        <td id="totalCell">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- قسم إدخال الدخل -->
+    <div class="income-section">
+        <h2 class="section-title-income">إضافة دخل</h2>
+        <input type="text" id="incomeDescInput" placeholder="أدخل وصف الدخل">
+        <input type="number" id="incomeAmountInput" placeholder="أدخل مبلغ الدخل">
+        <input type="date" id="incomeDateInput" placeholder="أدخل تاريخ الدخل">
+        <button id="addIncomeButton">إضافة الدخل</button>
+    </div>
+
+    <!-- جدول الدخل -->
+    <div>
+        <h2 class="section-title-income">جدول الدخل</h2>
+        <div class="table-wrapper">
+            <table class="income-table" id="incomeTable">
+                <thead>
+                    <tr>
+                        <td>التاريخ</td>
+                        <td>الوصف</td>
+                        <td>المبلغ</td>
+                    </tr>
+                </thead>
+                <tbody id="incomeTableBody"></tbody>
+                <tfoot>
+                    <tr class="income-row">
+                        <td colspan="2">إجمالي الدخل</td>
+                        <td id="totalIncomeCell">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- قسم الديون المستحقة لي عند الآخرين -->
+    <div class="debt-owed-section">
+        <h2 class="section-title-debt-owed">الديون المستحقة لي عند الآخرين</h2>
+        <input type="text" id="debtOwedDescInput" placeholder="اسم الشخص / وصف الدين">
+        <input type="number" id="debtOwedAmountInput" placeholder="أدخل المبلغ">
+        <input type="date" id="debtOwedDateInput" placeholder="أدخل التاريخ">
+        <button id="addDebtOwedButton">إضافة دين لي</button>
+    </div>
+
+    <!-- جدول الديون المستحقة لي -->
+    <div>
+        <h2 class="section-title-debt-owed">جدول الديون المستحقة لي</h2>
+        <div class="table-wrapper">
+            <table class="debt-owed-table" id="debtOwedTable">
+                <thead>
+                    <tr>
+                        <td>التاريخ</td>
+                        <td>الوصف</td>
+                        <td>المبلغ</td>
+                    </tr>
+                </thead>
+                <tbody id="debtOwedTableBody"></tbody>
+                <tfoot>
+                    <tr class="debt-owed-row">
+                        <td colspan="2">إجمالي الديون المستحقة لي</td>
+                        <td id="totalDebtOwedCell">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- قسم الديون التي عليّ للآخرين -->
+    <div class="debt-i-owe-section">
+        <h2 class="section-title-debt-i-owe">الديون التي عليّ للآخرين</h2>
+        <input type="text" id="debtIOweDescInput" placeholder="اسم الشخص / وصف الدين">
+        <input type="number" id="debtIOweAmountInput" placeholder="أدخل المبلغ">
+        <input type="date" id="debtIOweDateInput" placeholder="أدخل التاريخ">
+        <button id="addDebtIOweButton">إضافة دين عليّ</button>
+    </div>
+
+    <!-- جدول الديون التي عليّ -->
+    <div>
+        <h2 class="section-title-debt-i-owe">جدول الديون التي عليّ</h2>
+        <div class="table-wrapper">
+            <table class="debt-i-owe-table" id="debtIOweTable">
+                <thead>
+                    <tr>
+                        <td>التاريخ</td>
+                        <td>الوصف</td>
+                        <td>المبلغ</td>
+                    </tr>
+                </thead>
+                <tbody id="debtIOweTableBody"></tbody>
+                <tfoot>
+                    <tr class="debt-i-owe-row">
+                        <td colspan="2">إجمالي الديون التي عليّ</td>
+                        <td id="totalDebtIOweCell">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- الرصيد الصافي الشامل -->
+    <div class="net-worth-section">
+        <h2 class="section-title">الملخص المالي الشامل</h2>
+        <div class="table-wrapper">
+            <table>
+                <tfoot>
+                    <tr class="balance-row">
+                        <td colspan="2">الرصيد (الدخل - المنصرفات)</td>
+                        <td id="balanceCell">0</td>
+                    </tr>
+                    <tr class="net-worth-row">
+                        <td colspan="2">صافي الثروة (الرصيد + ديون لي - ديون عليّ)</td>
+                        <td id="netWorthCell">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==== نظام التخزين المحلي (localStorage) لحفظ البيانات ====
+    const STORAGE_KEYS = {
+        expenses: 'app_expenses',
+        incomes: 'app_incomes',
+        debtsOwed: 'app_debtsOwed',
+        debtsIOwe: 'app_debtsIOwe'
+    };
+
+    function loadFromStorage(key, fallback) {
+        try {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : fallback;
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function saveToStorage(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch (e) {
+            console.warn('تعذر حفظ البيانات في المتصفح:', e);
+        }
+    }
+
+    // مصفوفات البيانات المحملة من التخزين المحلي
+    let expenses = loadFromStorage(STORAGE_KEYS.expenses, []);
+    let incomes = loadFromStorage(STORAGE_KEYS.incomes, []);
+    let debtsOwedToMe = loadFromStorage(STORAGE_KEYS.debtsOwed, []);
+    let debtsIOwe = loadFromStorage(STORAGE_KEYS.debtsIOwe, []);
+
+    // ==== المراجع للعناصر ====
+    const addButton = document.getElementById('addButton');
+    const addIncomeButton = document.getElementById('addIncomeButton');
+    const addDebtOwedButton = document.getElementById('addDebtOwedButton');
+    const addDebtIOweButton = document.getElementById('addDebtIOweButton');
+    const filterButton = document.getElementById('filterButton');
+    const resetButton = document.getElementById('resetButton');
+
+    const descInput = document.getElementById('descInput');
+    const amountInput = document.getElementById('amountInput');
+    const dateInput = document.getElementById('dateInput');
+
+    const incomeDescInput = document.getElementById('incomeDescInput');
+    const incomeAmountInput = document.getElementById('incomeAmountInput');
+    const incomeDateInput = document.getElementById('incomeDateInput');
+
+    const debtOwedDescInput = document.getElementById('debtOwedDescInput');
+    const debtOwedAmountInput = document.getElementById('debtOwedAmountInput');
+    const debtOwedDateInput = document.getElementById('debtOwedDateInput');
+
+    const debtIOweDescInput = document.getElementById('debtIOweDescInput');
+    const debtIOweAmountInput = document.getElementById('debtIOweAmountInput');
+    const debtIOweDateInput = document.getElementById('debtIOweDateInput');
+
+    const fromDateInput = document.getElementById('fromDate');
+    const toDateInput = document.getElementById('toDate');
+
+    const tableBody = document.getElementById('tableBody');
+    const incomeTableBody = document.getElementById('incomeTableBody');
+    const debtOwedTableBody = document.getElementById('debtOwedTableBody');
+    const debtIOweTableBody = document.getElementById('debtIOweTableBody');
+
+    const totalCell = document.getElementById('totalCell');
+    const totalIncomeCell = document.getElementById('totalIncomeCell');
+    const totalDebtOwedCell = document.getElementById('totalDebtOwedCell');
+    const totalDebtIOweCell = document.getElementById('totalDebtIOweCell');
+    const balanceCell = document.getElementById('balanceCell');
+    const netWorthCell = document.getElementById('netWorthCell');
+
+    // ==== دوال التحديث ====
+    function updateGenericTable(tbody, data, totalCellEl) {
+        tbody.innerHTML = '';
+        let total = 0;
+        data.forEach(function(item) {
+            const row = document.createElement('tr');
+            const dateCell = document.createElement('td');
+            dateCell.textContent = item.date;
+            const descCell = document.createElement('td');
+            descCell.textContent = item.description;
+            const amountCell = document.createElement('td');
+            amountCell.textContent = item.amount;
+            row.appendChild(dateCell);
+            row.appendChild(descCell);
+            row.appendChild(amountCell);
+            tbody.appendChild(row);
+            total += item.amount;
+        });
+        totalCellEl.textContent = total;
+    }
+
+    function updateAllTables(filtered) {
+        const exp = filtered ? filtered.expenses : expenses;
+        const inc = filtered ? filtered.incomes : incomes;
+        const dOwed = filtered ? filtered.debtsOwed : debtsOwedToMe;
+        const dIOwe = filtered ? filtered.debtsIOwe : debtsIOwe;
+
+        updateGenericTable(tableBody, exp, totalCell);
+        updateGenericTable(incomeTableBody, inc, totalIncomeCell);
+        updateGenericTable(debtOwedTableBody, dOwed, totalDebtOwedCell);
+        updateGenericTable(debtIOweTableBody, dIOwe, totalDebtIOweCell);
+        updateBalance();
+    }
+
+    function updateBalance() {
+        const totalExpenses = parseFloat(totalCell.textContent) || 0;
+        const totalIncome = parseFloat(totalIncomeCell.textContent) || 0;
+        const totalDebtOwed = parseFloat(totalDebtOwedCell.textContent) || 0;
+        const totalDebtIOwe = parseFloat(totalDebtIOweCell.textContent) || 0;
+
+        const balance = totalIncome - totalExpenses;
+        const netWorth = balance + totalDebtOwed - totalDebtIOwe;
+
+        balanceCell.textContent = balance;
+        netWorthCell.textContent = netWorth;
+    }
+
+    function clearInputs(inputs) {
+        inputs.forEach(function(input) {
+            input.value = '';
+        });
+    }
+
+    // ==== إضافة البيانات ====
+    addButton.addEventListener('click', () => {
+        const description = descInput.value.trim();
+        const amount = parseFloat(amountInput.value);
+        const date = dateInput.value;
+
+        if (description && !isNaN(amount) && date) {
+            expenses.push({ description, amount, date });
+            saveToStorage(STORAGE_KEYS.expenses, expenses);
+            updateAllTables();
+            clearInputs([descInput, amountInput, dateInput]);
+        } else {
+            alert('يرجى ملء جميع حقول المنصرف بشكل صحيح.');
+        }
+    });
+
+    addIncomeButton.addEventListener('click', () => {
+        const description = incomeDescInput.value.trim();
+        const amount = parseFloat(incomeAmountInput.value);
+        const date = incomeDateInput.value;
+
+        if (description && !isNaN(amount) && date) {
+            incomes.push({ description, amount, date });
+            saveToStorage(STORAGE_KEYS.incomes, incomes);
+            updateAllTables();
+            clearInputs([incomeDescInput, incomeAmountInput, incomeDateInput]);
+        } else {
+            alert('يرجى ملء جميع حقول الدخل بشكل صحيح.');
+        }
+    });
+
+    addDebtOwedButton.addEventListener('click', () => {
+        const description = debtOwedDescInput.value.trim();
+        const amount = parseFloat(debtOwedAmountInput.value);
+        const date = debtOwedDateInput.value;
+
+        if (description && !isNaN(amount) && date) {
+            debtsOwedToMe.push({ description, amount, date });
+            saveToStorage(STORAGE_KEYS.debtsOwed, debtsOwedToMe);
+            updateAllTables();
+            clearInputs([debtOwedDescInput, debtOwedAmountInput, debtOwedDateInput]);
+        } else {
+            alert('يرجى ملء جميع حقول الدين بشكل صحيح.');
+        }
+    });
+
+    addDebtIOweButton.addEventListener('click', () => {
+        const description = debtIOweDescInput.value.trim();
+        const amount = parseFloat(debtIOweAmountInput.value);
+        const date = debtIOweDateInput.value;
+
+        if (description && !isNaN(amount) && date) {
+            debtsIOwe.push({ description, amount, date });
+            saveToStorage(STORAGE_KEYS.debtsIOwe, debtsIOwe);
+            updateAllTables();
+            clearInputs([debtIOweDescInput, debtIOweAmountInput, debtIOweDateInput]);
+        } else {
+            alert('يرجى ملء جميع حقول الدين بشكل صحيح.');
+        }
+    });
+
+    // ==== التصفية ====
+    filterButton.addEventListener('click', () => {
+        const fromDate = fromDateInput.value;
+        const toDate = toDateInput.value;
+
+        if (!fromDate || !toDate) {
+            alert('يرجى تحديد تاريخ البداية والنهاية.');
+            return;
+        }
+        if (fromDate > toDate) {
+            alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.');
+            return;
+        }
+
+        const filtered = {
+            expenses: expenses.filter(item => item.date >= fromDate && item.date <= toDate),
+            incomes: incomes.filter(item => item.date >= fromDate && item.date <= toDate),
+            debtsOwed: debtsOwedToMe.filter(item => item.date >= fromDate && item.date <= toDate),
+            debtsIOwe: debtsIOwe.filter(item => item.date >= fromDate && item.date <= toDate)
+        };
+
+        updateAllTables(filtered);
+    });
+
+    resetButton.addEventListener('click', () => {
+        fromDateInput.value = '';
+        toDateInput.value = '';
+        updateAllTables();
+    });
+
+    // ==== تحميل البيانات عند فتح الصفحة ====
+    // يتم عرض البيانات المحفوظة سابقاً (بعد تحديث F5) في الجداول
+    updateAllTables();
+</script>
+</body>
+</html>
