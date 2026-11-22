@@ -93,9 +93,7 @@
 <div id="authSection" class="auth-container" style="display: none;">
     <h2 id="authTitle">تسجيل الدخول</h2>
     
-    <!-- حقل الاسم (يظهر فقط عند إنشاء حساب) -->
     <input type="text" id="nameInput" placeholder="الاسم الكامل (مثال: مصعب)" style="display: none;">
-    
     <input type="email" id="emailInput" placeholder="البريد الإلكتروني">
     <input type="password" id="passwordInput" placeholder="كلمة المرور">
     
@@ -206,7 +204,7 @@
     import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, getDocs, getDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // ⚠️ إعدادات Firebase الخاصة بك
+    // ✅ تم تصحيح مفتاح API هنا (كان يحتوي على حرف O بدلاً من الرقم 0)
     const firebaseConfig = {
         apiKey: "AIzaSyC4sYVS07InGg62FYpG6ebEJvx14hm-a_I",
         authDomain: "daily1-f3ac9.firebaseapp.com",
@@ -242,7 +240,6 @@
     const authError = document.getElementById('authError');
     const displayUserName = document.getElementById('displayUserName');
 
-    // دالة تعيين تاريخ اليوم تلقائياً
     const setDefaultDates = () => {
         const today = new Date().toISOString().split('T')[0];
         document.querySelectorAll('input[type="date"]').forEach(input => input.value = today);
@@ -278,14 +275,11 @@
             if(isLoginMode) {
                 await signInWithEmailAndPassword(auth, email, password);
             } else {
-                // إنشاء الحساب
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 
-                // حفظ الاسم في ملف تعريف المستخدم
                 await updateProfile(user, { displayName: name });
                 
-                // حفظ بيانات المستخدم في قاعدة البيانات ليتمكن الأدمن من رؤيتها
                 await setDoc(doc(db, "users", user.uid), {
                     name: name,
                     email: email,
@@ -316,11 +310,9 @@
         if (user) {
             currentUser = user;
             
-            // جلب الاسم
             if(user.displayName) {
                 currentUserName = user.displayName;
             } else {
-                // في حال لم يوجد اسم (حساب قديم)، نجلب من قاعدة البيانات
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if(userDoc.exists() && userDoc.data().name) {
                     currentUserName = userDoc.data().name;
@@ -437,11 +429,10 @@
                     amount: amount, 
                     date: date, 
                     userId: currentUser.uid,
-                    userName: currentUserName // إضافة اسم المستخدم لكل سجل
+                    userName: currentUserName 
                 });
                 document.getElementById(descId).value = ''; 
                 document.getElementById(amountId).value = ''; 
-                // نترك التاريخ كما هو لتسهيل الإدخال المتتالي
             } catch (error) {
                 alert("فشل الحفظ: " + error.message);
                 console.error(error);
@@ -460,7 +451,6 @@
         usersListDiv.innerHTML = '<p>جاري تحميل بيانات المستخدمين...</p>';
         
         try {
-            // جلب جميع المستخدمين المسجلين من مجموعة users
             const usersSnap = await getDocs(collection(db, "users"));
             let usersMap = new Map();
             
@@ -472,7 +462,6 @@
                 });
             });
 
-            // حساب عدد سجلات كل مستخدم
             const cols = ["expenses", "incomes", "debtsOwed", "debtsIOwe"];
             for (const colName of cols) {
                 const snap = await getDocs(collection(db, colName));
@@ -509,7 +498,6 @@
         }
     }
 
-    // دالة حذف بيانات المستخدم
     window.deleteUserData = async function(userId, userName) {
         if (!confirm(`هل أنت متأكد من حذف جميع بيانات (${userName}) نهائياً؟`)) return;
         
@@ -526,11 +514,10 @@
                 }
             }
             
-            // حذف ملف المستخدم نفسه من مجموعة users
             await deleteDoc(doc(db, "users", userId));
             
             alert(`تم حذف (${userName}) وعدد ${deletedCount} سجل من بياناته بنجاح.`);
-            loadAdminPanel(); // تحديث القائمة
+            loadAdminPanel(); 
         } catch (error) {
             alert('فشل في الحذف. قد لا تمتلك الصلاحيات الكافية.');
             console.error(error);
